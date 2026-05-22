@@ -364,7 +364,8 @@ function BattlePage() {
       enemyAction = { kind: "switch", switchIndex: idx };
     } else {
       const moveName = chooseAiMove(enemyActive, playerActive, TRAINERS[trainerIdx].strategy);
-      enemyAction = { kind: "move", moveName };
+      const aiCanMega = !next.enemy.megaUsed && !enemyActive.isMega && !!SPECIES[enemyActive.baseSpecies]?.megaForm;
+      enemyAction = { kind: "move", moveName, mega: aiCanMega };
     }
 
     // If player is forced-switching, only do switch (no enemy move)
