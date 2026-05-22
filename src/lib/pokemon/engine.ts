@@ -20,6 +20,7 @@ export function createPokemon(species: string, level: number, moves: string[]): 
   const stats = computeStats(species, level);
   return {
     species,
+    baseSpecies: species,
     level,
     stats,
     currentHp: stats.hp,
@@ -27,7 +28,22 @@ export function createPokemon(species: string, level: number, moves: string[]): 
     status: null,
     stages: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, acc: 0, eva: 0 },
     fainted: false,
+    isMega: false,
   };
+}
+
+export function megaEvolve(p: PokemonInstance): boolean {
+  const base = SPECIES[p.baseSpecies];
+  if (!base?.megaForm || p.isMega || p.fainted) return false;
+  const megaName = base.megaForm;
+  if (!SPECIES[megaName]) return false;
+  const newStats = computeStats(megaName, p.level);
+  const hpRatio = p.currentHp / p.stats.hp;
+  p.species = megaName;
+  p.stats = newStats;
+  p.currentHp = Math.max(1, Math.floor(newStats.hp * hpRatio));
+  p.isMega = true;
+  return true;
 }
 
 export function typeEffectiveness(moveType: PokeType, defenderTypes: PokeType[]): number {

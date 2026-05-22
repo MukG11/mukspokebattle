@@ -1,4 +1,4 @@
-import { MOVES } from "./data";
+import { MOVES, SPECIES } from "./data";
 import {
   applyMoveEffect,
   calculateDamage,
@@ -6,6 +6,7 @@ import {
   effectivenessLabel,
   endOfTurnStatus,
   getSpeed,
+  megaEvolve,
 } from "./engine";
 import type { PokemonInstance } from "./types";
 
@@ -13,12 +14,14 @@ export interface TurnAction {
   kind: "move" | "switch";
   moveName?: string;
   switchIndex?: number;
+  mega?: boolean;
 }
 
 export interface BattleSide {
   trainerName: string;
   team: PokemonInstance[];
   activeIndex: number;
+  megaUsed: boolean;
 }
 
 export interface BattleState {
@@ -91,6 +94,22 @@ export function runTurn(
   if (enemyAction.kind === "switch" && enemyAction.switchIndex !== undefined) {
     state.enemy.activeIndex = enemyAction.switchIndex;
     state.log.push(`Foe sent out ${active(state.enemy).species}!`);
+  }
+
+  // Mega evolutions happen before moves
+  if (playerAction.mega && !state.player.megaUsed) {
+    if (megaEvolve(active(state.player))) {
+      state.player.megaUsed = true;
+      const p = active(state.player);
+      state.log.push(`${p.baseSpecies} Mega Evolved into ${SPECIES[p.species].name}!`);
+    }
+  }
+  if (enemyAction.mega && !state.enemy.megaUsed) {
+    if (megaEvolve(active(state.enemy))) {
+      state.enemy.megaUsed = true;
+      const p = active(state.enemy);
+      state.log.push(`Foe ${p.baseSpecies} Mega Evolved into ${SPECIES[p.species].name}!`);
+    }
   }
 
   // Determine move order by priority then speed

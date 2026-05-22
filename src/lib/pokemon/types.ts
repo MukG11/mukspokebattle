@@ -33,10 +33,13 @@ export interface Species {
   moves: string[]; // move names available
   sprite: string; // emoji or text
   color: string; // accent color hex
+  region?: "Kanto" | "Johto" | "Hoenn" | "Sinnoh" | "Unova" | "Kalos";
+  megaForm?: string; // key into SPECIES for the Mega form
 }
 
 export interface PokemonInstance {
   species: string;
+  baseSpecies: string; // species before mega evolution
   level: number;
   stats: BaseStats; // computed
   currentHp: number;
@@ -44,6 +47,7 @@ export interface PokemonInstance {
   status?: "burn" | "paralyze" | "poison" | "freeze" | "sleep" | null;
   stages: { atk: number; def: number; spa: number; spd: number; spe: number; acc: number; eva: number };
   fainted: boolean;
+  isMega: boolean;
 }
 
 export interface Trainer {

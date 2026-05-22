@@ -57,9 +57,10 @@ function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy"
       <div className="flex items-center gap-3 mb-2">
         <div className="text-5xl">{sp.sprite}</div>
         <div className="flex-1">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-lg font-bold">{p.species}</h3>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <h3 className="text-lg font-bold">{sp.name}</h3>
             <span className="text-xs text-muted-foreground">Lv. {p.level}</span>
+            {p.isMega && <span className="text-[10px] px-1.5 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
           </div>
           <div className="flex gap-1 mt-1">
             {sp.types.map((t) => (
@@ -87,7 +88,7 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
 
   const toggle = (name: string) => {
     setPicks((prev) =>
-      prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 3 ? [...prev, name] : prev,
+      prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 6 ? [...prev, name] : prev,
     );
   };
 
@@ -95,12 +96,12 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold">⚔️ Pokémon Battle Engine</h1>
-        <p className="text-muted-foreground">Pick up to 3 Pokémon and choose your opponent.</p>
+        <p className="text-muted-foreground">Pick up to 6 Pokémon. Mega Evolutions are enabled — once per battle.</p>
       </div>
 
       <Card className="p-4">
-        <h2 className="font-bold mb-3">Your Team ({picks.length}/3)</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+        <h2 className="font-bold mb-3">Your Team ({picks.length}/6)</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-h-[420px] overflow-y-auto pr-2">
           {PLAYER_TEAM_OPTIONS.map((name) => {
             const sp = SPECIES[name];
             const selected = picks.includes(name);
@@ -113,8 +114,12 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
                 }`}
                 style={selected ? { borderColor: sp.color } : undefined}
               >
-                <div className="text-3xl">{sp.sprite}</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl">{sp.sprite}</div>
+                  {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
+                </div>
                 <div className="text-sm font-bold">{name}</div>
+                {sp.region && <div className="text-[9px] text-muted-foreground">{sp.region}</div>}
                 <div className="flex gap-1 mt-1 flex-wrap">
                   {sp.types.map((t) => (
                     <span key={t} className={`text-[9px] px-1.5 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>{t}</span>
@@ -168,6 +173,7 @@ function Battle({ state, onAction, onReset }: {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
   const [showSwitch, setShowSwitch] = useState(false);
+  const [megaArmed, setMegaArmed] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -175,6 +181,7 @@ function Battle({ state, onAction, onReset }: {
   }, [state.log.length]);
 
   const mustSwitch = player.fainted && !state.winner;
+  const canMega = !state.player.megaUsed && !player.isMega && !!SPECIES[player.baseSpecies]?.megaForm;
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-4">
@@ -236,7 +243,7 @@ function Battle({ state, onAction, onReset }: {
                   <button
                     key={m.name}
                     disabled={m.pp <= 0}
-                    onClick={() => onAction({ kind: "move", moveName: m.name })}
+                    onClick={() => { onAction({ kind: "move", moveName: m.name, mega: megaArmed && canMega }); setMegaArmed(false); }}
                     className={`p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed ${TYPE_COLORS[mv.type]} text-white`}
                   >
                     <div className="font-bold text-sm">{m.name}</div>
@@ -252,6 +259,18 @@ function Battle({ state, onAction, onReset }: {
             <Button variant="outline" onClick={() => setShowSwitch(true)} disabled={state.player.team.filter(p => !p.fainted).length <= 1}>
               Switch Pokémon
             </Button>
+            {canMega && (
+              <Button
+                variant={megaArmed ? "default" : "outline"}
+                onClick={() => setMegaArmed((v) => !v)}
+                className={megaArmed ? "bg-fuchsia-600 hover:bg-fuchsia-700 text-white" : ""}
+              >
+                {megaArmed ? "✨ Mega Evolve ARMED — pick a move" : "✨ Mega Evolve"}
+              </Button>
+            )}
+            {player.isMega && (
+              <div className="text-xs font-bold text-fuchsia-600">⚡ Mega Evolved</div>
+            )}
             <div className="text-xs text-muted-foreground mt-auto">
               Speed: {player.stats.spe} · Atk {player.stats.atk} · Def {player.stats.def} · SpA {player.stats.spa} · SpD {player.stats.spd}
             </div>
@@ -327,8 +346,8 @@ function BattlePage() {
     const enemyTeam = buildEnemyTeam(tIdx);
     const playerTeam = buildPlayerTeam(picks);
     setState({
-      player: { trainerName: "You", team: playerTeam, activeIndex: 0 },
-      enemy: { trainerName: TRAINERS[tIdx].name, team: enemyTeam, activeIndex: 0 },
+      player: { trainerName: "You", team: playerTeam, activeIndex: 0, megaUsed: false },
+      enemy: { trainerName: TRAINERS[tIdx].name, team: enemyTeam, activeIndex: 0, megaUsed: false },
       log: [`A wild challenger appears! ${TRAINERS[tIdx].name} sent out ${enemyTeam[0].species}!`],
       winner: null,
     });
@@ -346,7 +365,8 @@ function BattlePage() {
       enemyAction = { kind: "switch", switchIndex: idx };
     } else {
       const moveName = chooseAiMove(enemyActive, playerActive, TRAINERS[trainerIdx].strategy);
-      enemyAction = { kind: "move", moveName };
+      const aiCanMega = !next.enemy.megaUsed && !enemyActive.isMega && !!SPECIES[enemyActive.baseSpecies]?.megaForm;
+      enemyAction = { kind: "move", moveName, mega: aiCanMega };
     }
 
     // If player is forced-switching, only do switch (no enemy move)
