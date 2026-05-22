@@ -153,7 +153,7 @@ export const SPECIES: Record<string, Species> = {
   Goodra: { name: "Goodra", types: ["dragon"], base: { hp: 90, atk: 100, def: 70, spa: 110, spd: 150, spe: 80 }, moves: ["Dragon Pulse", "Sludge Bomb", "Thunderbolt", "Ice Beam"], sprite: "🐌🐲", color: "#7c3aed", region: "Kalos" },
   Noivern: { name: "Noivern", types: ["flying", "dragon"], base: { hp: 85, atk: 70, def: 80, spa: 97, spd: 80, spe: 123 }, moves: ["Hurricane", "Draco Meteor", "Dragon Pulse", "Air Slash"], sprite: "🦇🐉", color: "#6d28d9", region: "Kalos" },
   Diancie: { name: "Diancie", types: ["rock", "fairy"], base: { hp: 50, atk: 100, def: 150, spa: 100, spd: 150, spe: 50 }, moves: ["Moonblast", "Dazzling Gleam", "Earth Power", "Stone Edge"], sprite: "💎👸", color: "#f472b6", region: "Kalos", megaForm: "Diancie-Mega" },
-  "Diancie-Mega": { name: "Diancie (Mega)", types: ["rock", "fairy"], base: { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }, moves: ["Moonblast", "Diamond Storm" in MOVES ? "Diamond Storm" : "Stone Edge", "Earth Power", "Play Rough"], sprite: "💎✨", color: "#ec4899" },
+  "Diancie-Mega": { name: "Diancie (Mega)", types: ["rock", "fairy"], base: { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }, moves: ["Moonblast", "Stone Edge", "Earth Power", "Play Rough"], sprite: "💎✨", color: "#ec4899" },
 };
 
 // Cleanup: the inline `in MOVES` ternaries above run at module load and resolve
