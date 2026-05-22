@@ -131,7 +131,7 @@ export const SPECIES: Record<string, Species> = {
   Flygon: { name: "Flygon", types: ["ground", "dragon"], base: { hp: 80, atk: 100, def: 80, spa: 80, spd: 80, spe: 100 }, moves: ["Earthquake", "Dragon Claw", "Stone Edge", "Crunch"], sprite: "🪲🟢", color: "#65a30d", region: "Hoenn" },
 
   // === Sinnoh ===
-  Infernape: { name: "Infernape", types: ["fire", "fighting"], base: { hp: 76, atk: 104, def: 71, spa: 104, spd: 71, spe: 108 }, moves: ["Flare Blitz", "Close Combat", "Stone Edge", "Mach Punch" in MOVES ? "Mach Punch" : "Bullet Punch"], sprite: "🔥🐒", color: "#ea580c", region: "Sinnoh" },
+  Infernape: { name: "Infernape", types: ["fire", "fighting"], base: { hp: 76, atk: 104, def: 71, spa: 104, spd: 71, spe: 108 }, moves: ["Flare Blitz", "Close Combat", "Stone Edge", "Bullet Punch"], sprite: "🔥🐒", color: "#ea580c", region: "Sinnoh" },
   Empoleon: { name: "Empoleon", types: ["water", "steel"], base: { hp: 84, atk: 86, def: 88, spa: 111, spd: 101, spe: 60 }, moves: ["Hydro Pump", "Flash Cannon", "Ice Beam", "Aura Sphere"], sprite: "🐧👑", color: "#1e3a8a", region: "Sinnoh" },
   Torterra: { name: "Torterra", types: ["grass", "ground"], base: { hp: 95, atk: 109, def: 105, spa: 75, spd: 85, spe: 56 }, moves: ["Wood Hammer", "Earthquake", "Stone Edge", "Crunch"], sprite: "🌳🐢", color: "#84cc16", region: "Sinnoh" },
   Garchomp: { name: "Garchomp", types: ["dragon", "ground"], base: { hp: 108, atk: 130, def: 95, spa: 80, spd: 85, spe: 102 }, moves: ["Outrage", "Earthquake", "Stone Edge", "Dragon Claw"], sprite: "🦈🐉", color: "#1e3a8a", region: "Sinnoh", megaForm: "Garchomp-Mega" },
