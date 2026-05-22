@@ -87,7 +87,7 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
 
   const toggle = (name: string) => {
     setPicks((prev) =>
-      prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 3 ? [...prev, name] : prev,
+      prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 6 ? [...prev, name] : prev,
     );
   };
 
