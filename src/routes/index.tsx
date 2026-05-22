@@ -99,8 +99,8 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
       </div>
 
       <Card className="p-4">
-        <h2 className="font-bold mb-3">Your Team ({picks.length}/3)</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+        <h2 className="font-bold mb-3">Your Team ({picks.length}/6)</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-h-[420px] overflow-y-auto pr-2">
           {PLAYER_TEAM_OPTIONS.map((name) => {
             const sp = SPECIES[name];
             const selected = picks.includes(name);
