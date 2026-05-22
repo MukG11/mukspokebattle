@@ -113,8 +113,12 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
                 }`}
                 style={selected ? { borderColor: sp.color } : undefined}
               >
-                <div className="text-3xl">{sp.sprite}</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl">{sp.sprite}</div>
+                  {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
+                </div>
                 <div className="text-sm font-bold">{name}</div>
+                {sp.region && <div className="text-[9px] text-muted-foreground">{sp.region}</div>}
                 <div className="flex gap-1 mt-1 flex-wrap">
                   {sp.types.map((t) => (
                     <span key={t} className={`text-[9px] px-1.5 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>{t}</span>
