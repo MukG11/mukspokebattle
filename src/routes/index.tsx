@@ -172,6 +172,7 @@ function Battle({ state, onAction, onReset }: {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
   const [showSwitch, setShowSwitch] = useState(false);
+  const [megaArmed, setMegaArmed] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -179,6 +180,7 @@ function Battle({ state, onAction, onReset }: {
   }, [state.log.length]);
 
   const mustSwitch = player.fainted && !state.winner;
+  const canMega = !state.player.megaUsed && !player.isMega && !!SPECIES[player.baseSpecies]?.megaForm;
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-4">
