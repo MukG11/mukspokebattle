@@ -1,26 +1,380 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS } from "@/lib/pokemon/data";
+import { createPokemon } from "@/lib/pokemon/engine";
+import { chooseAiMove, chooseAiSwitch } from "@/lib/pokemon/ai";
+import {
+  type BattleState,
+  type TurnAction,
+  runTurn,
+} from "@/lib/pokemon/battle";
+import type { PokemonInstance } from "@/lib/pokemon/types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ component: BattlePage });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+const TYPE_COLORS: Record<string, string> = {
+  normal: "bg-gray-400", fire: "bg-red-500", water: "bg-blue-500", grass: "bg-green-500",
+  electric: "bg-yellow-400 text-black", ice: "bg-cyan-300 text-black", fighting: "bg-orange-700",
+  poison: "bg-purple-600", ground: "bg-amber-600", flying: "bg-sky-400", psychic: "bg-pink-500",
+  bug: "bg-lime-600", rock: "bg-yellow-700", ghost: "bg-indigo-700", dragon: "bg-violet-700",
+  dark: "bg-neutral-800", steel: "bg-slate-400 text-black", fairy: "bg-pink-300 text-black",
+};
+
+function buildPlayerTeam(picks: string[]): PokemonInstance[] {
+  return picks.map((name) => {
+    const sp = SPECIES[name];
+    return createPokemon(name, 50, sp.moves);
+  });
+}
+
+function buildEnemyTeam(trainerIdx: number): PokemonInstance[] {
+  return TRAINERS[trainerIdx].team.map((m) => createPokemon(m.species, m.level, m.moves));
+}
+
+function HpBar({ p }: { p: PokemonInstance }) {
+  const pct = (p.currentHp / p.stats.hp) * 100;
+  const color = pct > 50 ? "bg-green-500" : pct > 20 ? "bg-yellow-500" : "bg-red-500";
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="w-full">
+      <div className="flex justify-between text-xs font-mono mb-1">
+        <span>HP</span>
+        <span>{p.currentHp} / {p.stats.hp}</span>
+      </div>
+      <div className="h-2 rounded bg-muted overflow-hidden">
+        <div className={`h-full ${color} transition-all duration-500`} style={{ width: `${pct}%` }} />
+      </div>
     </div>
   );
 }
 
-function Index() {
-  return <PlaceholderIndex />;
+function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy" }) {
+  const sp = SPECIES[p.species];
+  return (
+    <Card className="p-4 flex-1 min-w-[280px]" style={{ borderColor: sp.color, borderWidth: 2 }}>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="text-5xl">{sp.sprite}</div>
+        <div className="flex-1">
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-lg font-bold">{p.species}</h3>
+            <span className="text-xs text-muted-foreground">Lv. {p.level}</span>
+          </div>
+          <div className="flex gap-1 mt-1">
+            {sp.types.map((t) => (
+              <span key={t} className={`text-[10px] px-2 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>
+                {t}
+              </span>
+            ))}
+            {p.status && (
+              <span className="text-[10px] px-2 py-0.5 rounded uppercase font-bold bg-purple-200 text-purple-900">
+                {p.status}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="text-xs text-muted-foreground uppercase">{side}</div>
+      </div>
+      <HpBar p={p} />
+    </Card>
+  );
+}
+
+function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number) => void }) {
+  const [picks, setPicks] = useState<string[]>([]);
+  const [trainerIdx, setTrainerIdx] = useState(0);
+
+  const toggle = (name: string) => {
+    setPicks((prev) =>
+      prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 3 ? [...prev, name] : prev,
+    );
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold">⚔️ Pokémon Battle Engine</h1>
+        <p className="text-muted-foreground">Pick up to 3 Pokémon and choose your opponent.</p>
+      </div>
+
+      <Card className="p-4">
+        <h2 className="font-bold mb-3">Your Team ({picks.length}/3)</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          {PLAYER_TEAM_OPTIONS.map((name) => {
+            const sp = SPECIES[name];
+            const selected = picks.includes(name);
+            return (
+              <button
+                key={name}
+                onClick={() => toggle(name)}
+                className={`p-3 rounded-lg border-2 transition-all text-left ${
+                  selected ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                }`}
+                style={selected ? { borderColor: sp.color } : undefined}
+              >
+                <div className="text-3xl">{sp.sprite}</div>
+                <div className="text-sm font-bold">{name}</div>
+                <div className="flex gap-1 mt-1 flex-wrap">
+                  {sp.types.map((t) => (
+                    <span key={t} className={`text-[9px] px-1.5 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>{t}</span>
+                  ))}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
+      <Card className="p-4">
+        <h2 className="font-bold mb-3">Opponent</h2>
+        <div className="grid sm:grid-cols-3 gap-2">
+          {TRAINERS.map((t, i) => (
+            <button
+              key={t.name}
+              onClick={() => setTrainerIdx(i)}
+              className={`p-4 rounded-lg border-2 text-left transition-all ${
+                trainerIdx === i ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+              }`}
+            >
+              <div className="text-4xl">{t.sprite}</div>
+              <div className="font-bold">{t.name}</div>
+              <div className="text-xs text-muted-foreground">{t.title}</div>
+              <div className="text-xs mt-2">
+                <Badge variant="secondary" className="capitalize">{t.strategy} AI</Badge>
+              </div>
+              <div className="text-xs mt-2 text-muted-foreground">
+                {t.team.length} Pokémon · Lv. {t.team[0].level}+
+              </div>
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      <div className="flex justify-center">
+        <Button size="lg" disabled={picks.length === 0} onClick={() => onStart(picks, trainerIdx)}>
+          Start Battle
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function Battle({ state, onAction, onReset }: {
+  state: BattleState;
+  onAction: (a: TurnAction) => void;
+  onReset: () => void;
+}) {
+  const player = state.player.team[state.player.activeIndex];
+  const enemy = state.enemy.team[state.enemy.activeIndex];
+  const [showSwitch, setShowSwitch] = useState(false);
+  const logRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [state.log.length]);
+
+  const mustSwitch = player.fainted && !state.winner;
+
+  return (
+    <div className="max-w-5xl mx-auto p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">⚔️ Battle vs {state.enemy.trainerName}</h1>
+        <Button variant="outline" size="sm" onClick={onReset}>Forfeit</Button>
+      </div>
+
+      {/* Battlefield */}
+      <div className="relative bg-gradient-to-b from-sky-200 to-green-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-6 min-h-[280px] overflow-hidden">
+        <div className="absolute top-4 right-4 max-w-sm w-full">
+          <PokemonCard p={enemy} side="enemy" />
+        </div>
+        <div className="absolute bottom-4 left-4 max-w-sm w-full">
+          <PokemonCard p={player} side="player" />
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl opacity-30">
+          ⚔️
+        </div>
+      </div>
+
+      {/* Battle log */}
+      <Card className="p-3">
+        <div ref={logRef} className="h-32 overflow-y-auto font-mono text-sm space-y-1">
+          {state.log.length === 0 && <div className="text-muted-foreground">Choose your move...</div>}
+          {state.log.map((l, i) => <div key={i}>› {l}</div>)}
+        </div>
+      </Card>
+
+      {/* Controls */}
+      {state.winner ? (
+        <Card className="p-6 text-center space-y-3">
+          <div className="text-3xl font-bold">
+            {state.winner === "player" ? "🏆 Victory!" : "💀 Defeat"}
+          </div>
+          <Button onClick={onReset}>Battle Again</Button>
+        </Card>
+      ) : mustSwitch ? (
+        <Card className="p-4">
+          <div className="font-bold mb-2">Choose your next Pokémon:</div>
+          <SwitchPanel team={state.player.team} activeIndex={state.player.activeIndex} forced onPick={(i) => onAction({ kind: "switch", switchIndex: i })} />
+        </Card>
+      ) : showSwitch ? (
+        <Card className="p-4 space-y-2">
+          <div className="flex justify-between items-center">
+            <div className="font-bold">Switch Pokémon</div>
+            <Button variant="ghost" size="sm" onClick={() => setShowSwitch(false)}>Cancel</Button>
+          </div>
+          <SwitchPanel team={state.player.team} activeIndex={state.player.activeIndex} onPick={(i) => { setShowSwitch(false); onAction({ kind: "switch", switchIndex: i }); }} />
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Card className="p-3">
+            <div className="text-sm font-bold mb-2">Moves</div>
+            <div className="grid grid-cols-2 gap-2">
+              {player.moves.map((m) => {
+                const mv = MOVES[m.name];
+                return (
+                  <button
+                    key={m.name}
+                    disabled={m.pp <= 0}
+                    onClick={() => onAction({ kind: "move", moveName: m.name })}
+                    className={`p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed ${TYPE_COLORS[mv.type]} text-white`}
+                  >
+                    <div className="font-bold text-sm">{m.name}</div>
+                    <div className="text-[10px] uppercase opacity-90">{mv.category} · Pwr {mv.power || "—"}</div>
+                    <div className="text-[10px] opacity-90">PP {m.pp}/{m.maxPp}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+          <Card className="p-3 flex flex-col gap-2">
+            <div className="text-sm font-bold">Actions</div>
+            <Button variant="outline" onClick={() => setShowSwitch(true)} disabled={state.player.team.filter(p => !p.fainted).length <= 1}>
+              Switch Pokémon
+            </Button>
+            <div className="text-xs text-muted-foreground mt-auto">
+              Speed: {player.stats.spe} · Atk {player.stats.atk} · Def {player.stats.def} · SpA {player.stats.spa} · SpD {player.stats.spd}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Team overview */}
+      <Card className="p-3">
+        <div className="text-xs font-bold mb-2 text-muted-foreground">YOUR TEAM</div>
+        <div className="flex gap-2 flex-wrap">
+          {state.player.team.map((p, i) => (
+            <div key={i} className={`flex items-center gap-2 px-2 py-1 rounded border ${i === state.player.activeIndex ? "border-primary bg-primary/10" : "border-border"} ${p.fainted ? "opacity-40" : ""}`}>
+              <span className="text-xl">{SPECIES[p.species].sprite}</span>
+              <div className="text-xs">
+                <div className="font-bold">{p.species}</div>
+                <div>{p.currentHp}/{p.stats.hp}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="text-xs font-bold mt-3 mb-2 text-muted-foreground">ENEMY TEAM</div>
+        <div className="flex gap-2 flex-wrap">
+          {state.enemy.team.map((p, i) => (
+            <div key={i} className={`flex items-center gap-2 px-2 py-1 rounded border ${i === state.enemy.activeIndex ? "border-destructive bg-destructive/10" : "border-border"} ${p.fainted ? "opacity-40" : ""}`}>
+              <span className="text-xl">{SPECIES[p.species].sprite}</span>
+              <div className="text-xs">
+                <div className="font-bold">{p.species}</div>
+                <div>{p.fainted ? "Fainted" : "OK"}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInstance[]; activeIndex: number; onPick: (i: number) => void; forced?: boolean }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {team.map((p, i) => {
+        const sp = SPECIES[p.species];
+        const disabled = p.fainted || (!forced && i === activeIndex);
+        return (
+          <button
+            key={i}
+            disabled={disabled}
+            onClick={() => onPick(i)}
+            className="p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ borderColor: sp.color }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{sp.sprite}</span>
+              <div>
+                <div className="font-bold text-sm">{p.species}</div>
+                <div className="text-xs">{p.currentHp}/{p.stats.hp} HP</div>
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function BattlePage() {
+  const [state, setState] = useState<BattleState | null>(null);
+  const [trainerIdx, setTrainerIdx] = useState(0);
+
+  const startBattle = (picks: string[], tIdx: number) => {
+    setTrainerIdx(tIdx);
+    const enemyTeam = buildEnemyTeam(tIdx);
+    const playerTeam = buildPlayerTeam(picks);
+    setState({
+      player: { trainerName: "You", team: playerTeam, activeIndex: 0 },
+      enemy: { trainerName: TRAINERS[tIdx].name, team: enemyTeam, activeIndex: 0 },
+      log: [`A wild challenger appears! ${TRAINERS[tIdx].name} sent out ${enemyTeam[0].species}!`],
+      winner: null,
+    });
+  };
+
+  const handleAction = (action: TurnAction) => {
+    if (!state) return;
+    const next: BattleState = JSON.parse(JSON.stringify(state));
+    const enemyActive = next.enemy.team[next.enemy.activeIndex];
+    const playerActive = next.player.team[next.player.activeIndex];
+
+    let enemyAction: TurnAction;
+    if (enemyActive.fainted) {
+      const idx = chooseAiSwitch(next.enemy.team, playerActive);
+      enemyAction = { kind: "switch", switchIndex: idx };
+    } else {
+      const moveName = chooseAiMove(enemyActive, playerActive, TRAINERS[trainerIdx].strategy);
+      enemyAction = { kind: "move", moveName };
+    }
+
+    // If player is forced-switching, only do switch (no enemy move)
+    if (action.kind === "switch" && playerActive.fainted) {
+      next.player.activeIndex = action.switchIndex!;
+      next.log.push(`Go! ${next.player.team[next.player.activeIndex].species}!`);
+      setState(next);
+      return;
+    }
+
+    runTurn(next, action, enemyAction);
+
+    // If enemy fainted, queue an AI switch on next tick
+    const en = next.enemy.team[next.enemy.activeIndex];
+    if (en.fainted && !next.winner) {
+      const idx = chooseAiSwitch(next.enemy.team, next.player.team[next.player.activeIndex]);
+      if (idx >= 0) {
+        next.enemy.activeIndex = idx;
+        next.log.push(`${next.enemy.trainerName} sent out ${next.enemy.team[idx].species}!`);
+      }
+    }
+
+    setState(next);
+  };
+
+  const reset = () => setState(null);
+
+  if (!state) return <TeamPicker onStart={startBattle} />;
+  return <Battle state={state} onAction={handleAction} onReset={reset} />;
 }
