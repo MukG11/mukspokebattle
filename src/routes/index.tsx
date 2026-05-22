@@ -57,9 +57,10 @@ function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy"
       <div className="flex items-center gap-3 mb-2">
         <div className="text-5xl">{sp.sprite}</div>
         <div className="flex-1">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-lg font-bold">{p.species}</h3>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <h3 className="text-lg font-bold">{sp.name}</h3>
             <span className="text-xs text-muted-foreground">Lv. {p.level}</span>
+            {p.isMega && <span className="text-[10px] px-1.5 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
           </div>
           <div className="flex gap-1 mt-1">
             {sp.types.map((t) => (
