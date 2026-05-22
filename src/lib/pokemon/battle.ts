@@ -1,4 +1,4 @@
-import { MOVES } from "./data";
+import { MOVES, SPECIES } from "./data";
 import {
   applyMoveEffect,
   calculateDamage,
@@ -6,6 +6,7 @@ import {
   effectivenessLabel,
   endOfTurnStatus,
   getSpeed,
+  megaEvolve,
 } from "./engine";
 import type { PokemonInstance } from "./types";
 
@@ -13,12 +14,14 @@ export interface TurnAction {
   kind: "move" | "switch";
   moveName?: string;
   switchIndex?: number;
+  mega?: boolean;
 }
 
 export interface BattleSide {
   trainerName: string;
   team: PokemonInstance[];
   activeIndex: number;
+  megaUsed: boolean;
 }
 
 export interface BattleState {
