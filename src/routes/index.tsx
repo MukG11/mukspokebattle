@@ -242,7 +242,7 @@ function Battle({ state, onAction, onReset }: {
                   <button
                     key={m.name}
                     disabled={m.pp <= 0}
-                    onClick={() => onAction({ kind: "move", moveName: m.name })}
+                    onClick={() => { onAction({ kind: "move", moveName: m.name, mega: megaArmed && canMega }); setMegaArmed(false); }}
                     className={`p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed ${TYPE_COLORS[mv.type]} text-white`}
                   >
                     <div className="font-bold text-sm">{m.name}</div>
