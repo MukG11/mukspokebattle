@@ -258,6 +258,18 @@ function Battle({ state, onAction, onReset }: {
             <Button variant="outline" onClick={() => setShowSwitch(true)} disabled={state.player.team.filter(p => !p.fainted).length <= 1}>
               Switch Pokémon
             </Button>
+            {canMega && (
+              <Button
+                variant={megaArmed ? "default" : "outline"}
+                onClick={() => setMegaArmed((v) => !v)}
+                className={megaArmed ? "bg-fuchsia-600 hover:bg-fuchsia-700 text-white" : ""}
+              >
+                {megaArmed ? "✨ Mega Evolve ARMED — pick a move" : "✨ Mega Evolve"}
+              </Button>
+            )}
+            {player.isMega && (
+              <div className="text-xs font-bold text-fuchsia-600">⚡ Mega Evolved</div>
+            )}
             <div className="text-xs text-muted-foreground mt-auto">
               Speed: {player.stats.spe} · Atk {player.stats.atk} · Def {player.stats.def} · SpA {player.stats.spa} · SpD {player.stats.spd}
             </div>
