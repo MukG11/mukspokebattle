@@ -96,6 +96,22 @@ export function runTurn(
     state.log.push(`Foe sent out ${active(state.enemy).species}!`);
   }
 
+  // Mega evolutions happen before moves
+  if (playerAction.mega && !state.player.megaUsed) {
+    if (megaEvolve(active(state.player))) {
+      state.player.megaUsed = true;
+      const p = active(state.player);
+      state.log.push(`${p.baseSpecies} Mega Evolved into ${SPECIES[p.species].name}!`);
+    }
+  }
+  if (enemyAction.mega && !state.enemy.megaUsed) {
+    if (megaEvolve(active(state.enemy))) {
+      state.enemy.megaUsed = true;
+      const p = active(state.enemy);
+      state.log.push(`Foe ${p.baseSpecies} Mega Evolved into ${SPECIES[p.species].name}!`);
+    }
+  }
+
   // Determine move order by priority then speed
   const pMove = playerAction.kind === "move" ? MOVES[playerAction.moveName!] : null;
   const eMove = enemyAction.kind === "move" ? MOVES[enemyAction.moveName!] : null;
