@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS } from "@/lib/pokemon/data";
 import { createPokemon } from "@/lib/pokemon/engine";
@@ -12,7 +12,6 @@ import type { PokemonInstance } from "@/lib/pokemon/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/")({ component: BattlePage });
 
