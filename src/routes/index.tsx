@@ -345,8 +345,8 @@ function BattlePage() {
     const enemyTeam = buildEnemyTeam(tIdx);
     const playerTeam = buildPlayerTeam(picks);
     setState({
-      player: { trainerName: "You", team: playerTeam, activeIndex: 0 },
-      enemy: { trainerName: TRAINERS[tIdx].name, team: enemyTeam, activeIndex: 0 },
+      player: { trainerName: "You", team: playerTeam, activeIndex: 0, megaUsed: false },
+      enemy: { trainerName: TRAINERS[tIdx].name, team: enemyTeam, activeIndex: 0, megaUsed: false },
       log: [`A wild challenger appears! ${TRAINERS[tIdx].name} sent out ${enemyTeam[0].species}!`],
       winner: null,
     });
