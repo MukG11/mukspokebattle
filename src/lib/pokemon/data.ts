@@ -149,12 +149,34 @@ export const SPECIES: Record<string, Species> = {
   Delphox: { name: "Delphox", types: ["fire", "psychic"], base: { hp: 75, atk: 69, def: 72, spa: 114, spd: 100, spe: 104 }, moves: ["Fire Blast", "Psychic", "Shadow Ball", "Dazzling Gleam"], sprite: "🦊🔥", color: "#dc2626", region: "Kalos" },
   Talonflame: { name: "Talonflame", types: ["fire", "flying"], base: { hp: 78, atk: 81, def: 71, spa: 74, spd: 69, spe: 126 }, moves: ["Brave Bird", "Flare Blitz", "Roost", "Quick Attack"], sprite: "🦅🔥", color: "#f97316", region: "Kalos" },
   Aegislash: { name: "Aegislash", types: ["steel", "ghost"], base: { hp: 60, atk: 50, def: 150, spa: 50, spd: 150, spe: 60 }, moves: ["Shadow Sneak", "Iron Head", "Shadow Ball", "Sacred Sword"], sprite: "⚔️🛡️", color: "#7c3aed", region: "Kalos" },
-  Sylveon: { name: "Sylveon", types: ["fairy"], base: { hp: 95, atk: 65, def: 65, spa: 110, spd: 130, spe: 60 }, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"], sprite: "🎀🦊", color: "#f9a8d4", region: "Kalos" },
+  Sylveon: { name: "Sylveon", types: ["fairy"], base: { hp: 125, atk: 85, def: 90, spa: 160, spd: 160, spe: 95 }, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"], sprite: "🎀🦊", color: "#f9a8d4", region: "Kalos" },
   Goodra: { name: "Goodra", types: ["dragon"], base: { hp: 90, atk: 100, def: 70, spa: 110, spd: 150, spe: 80 }, moves: ["Dragon Pulse", "Sludge Bomb", "Thunderbolt", "Ice Beam"], sprite: "🐌🐲", color: "#7c3aed", region: "Kalos" },
   Noivern: { name: "Noivern", types: ["flying", "dragon"], base: { hp: 85, atk: 70, def: 80, spa: 97, spd: 80, spe: 123 }, moves: ["Hurricane", "Draco Meteor", "Dragon Pulse", "Air Slash"], sprite: "🦇🐉", color: "#6d28d9", region: "Kalos" },
   Diancie: { name: "Diancie", types: ["rock", "fairy"], base: { hp: 50, atk: 100, def: 150, spa: 100, spd: 150, spe: 50 }, moves: ["Moonblast", "Dazzling Gleam", "Earth Power", "Stone Edge"], sprite: "💎👸", color: "#f472b6", region: "Kalos", megaForm: "Diancie-Mega" },
   "Diancie-Mega": { name: "Diancie (Mega)", types: ["rock", "fairy"], base: { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }, moves: ["Moonblast", "Stone Edge", "Earth Power", "Play Rough"], sprite: "💎✨", color: "#ec4899" },
+
+  // === Eeveelutions (BUFFED — "the eight elemental sovereigns") ===
+  Eevee: { name: "Eevee", types: ["normal"], base: { hp: 95, atk: 95, def: 90, spa: 95, spd: 95, spe: 95 }, moves: ["Body Slam", "Quick Attack", "Shadow Ball", "Iron Tail"], sprite: "🦊", color: "#c69968", region: "Kanto" },
+  Vaporeon: { name: "Vaporeon", types: ["water"], base: { hp: 160, atk: 85, def: 90, spa: 140, spd: 125, spe: 95 }, moves: ["Hydro Pump", "Ice Beam", "Shadow Ball", "Aura Sphere"], sprite: "💧🦊", color: "#3b82f6", region: "Kanto" },
+  Jolteon: { name: "Jolteon", types: ["electric"], base: { hp: 95, atk: 85, def: 90, spa: 140, spd: 125, spe: 160 }, moves: ["Thunder", "Thunderbolt", "Shadow Ball", "Quick Attack"], sprite: "⚡🦊", color: "#eab308", region: "Kanto" },
+  Flareon: { name: "Flareon", types: ["fire"], base: { hp: 95, atk: 160, def: 90, spa: 125, spd: 140, spe: 95 }, moves: ["Flare Blitz", "Fire Blast", "Body Slam", "Quick Attack"], sprite: "🔥🦊", color: "#ef4444", region: "Kanto" },
+  Espeon: { name: "Espeon", types: ["psychic"], base: { hp: 95, atk: 85, def: 90, spa: 160, spd: 125, spe: 140 }, moves: ["Psychic", "Shadow Ball", "Dazzling Gleam", "Recover"], sprite: "🔮🦊", color: "#ec4899", region: "Johto" },
+  Umbreon: { name: "Umbreon", types: ["dark"], base: { hp: 125, atk: 85, def: 140, spa: 90, spd: 160, spe: 95 }, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"], sprite: "🌑🦊", color: "#1f2937", region: "Johto" },
+  Leafeon: { name: "Leafeon", types: ["grass"], base: { hp: 95, atk: 140, def: 160, spa: 85, spd: 90, spe: 125 }, moves: ["Leaf Blade", "X-Scissor", "Sucker Punch", "Quick Attack"], sprite: "🍃🦊", color: "#22c55e", region: "Sinnoh" },
+  Glaceon: { name: "Glaceon", types: ["ice"], base: { hp: 95, atk: 85, def: 140, spa: 160, spd: 125, spe: 90 }, moves: ["Blizzard", "Ice Beam", "Shadow Ball", "Icicle Crash"], sprite: "❄️🦊", color: "#67e8f9", region: "Sinnoh" },
 };
+
+// Showdown sprite URL helper — returns an animated GIF of the Pokémon
+export function getSpriteUrl(speciesName: string): string {
+  const sp = SPECIES[speciesName];
+  if (sp?.image) return sp.image;
+  const slug = speciesName
+    .toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, "")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-mega-([xy])$/, "-mega$1");
+  return `https://play.pokemonshowdown.com/sprites/ani/${slug}.gif`;
+}
 
 // Cleanup: the inline `in MOVES` ternaries above run at module load and resolve
 // to fallbacks if the moves aren't defined. Patch unresolved move references.
@@ -231,6 +253,20 @@ export const TRAINERS: Trainer[] = [
       { species: "Noivern", level: 65, moves: ["Hurricane", "Draco Meteor", "Dragon Pulse", "Air Slash"] },
       { species: "Goodra", level: 65, moves: ["Dragon Pulse", "Sludge Bomb", "Thunderbolt", "Ice Beam"] },
       { species: "Charizard", level: 68, moves: ["Flamethrower", "Air Slash", "Dragon Claw", "Fire Blast"] },
+    ],
+  },
+  {
+    name: "Eevee Master Aria",
+    title: "Sovereign of the Eight",
+    sprite: "🦊✨",
+    strategy: "smart",
+    team: [
+      { species: "Vaporeon", level: 65, moves: ["Hydro Pump", "Ice Beam", "Shadow Ball", "Aura Sphere"] },
+      { species: "Jolteon", level: 65, moves: ["Thunder", "Thunderbolt", "Shadow Ball", "Quick Attack"] },
+      { species: "Flareon", level: 65, moves: ["Flare Blitz", "Fire Blast", "Body Slam", "Quick Attack"] },
+      { species: "Espeon", level: 65, moves: ["Psychic", "Shadow Ball", "Dazzling Gleam", "Recover"] },
+      { species: "Umbreon", level: 65, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"] },
+      { species: "Sylveon", level: 68, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"] },
     ],
   },
 ];

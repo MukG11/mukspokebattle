@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS } from "@/lib/pokemon/data";
+import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS, getSpriteUrl } from "@/lib/pokemon/data";
 import { createPokemon } from "@/lib/pokemon/engine";
 import { chooseAiMove, chooseAiSwitch } from "@/lib/pokemon/ai";
 import {
@@ -34,6 +34,21 @@ function buildEnemyTeam(trainerIdx: number): PokemonInstance[] {
   return TRAINERS[trainerIdx].team.map((m) => createPokemon(m.species, m.level, m.moves));
 }
 
+function PokeSprite({ name, className = "w-12 h-12" }: { name: string; className?: string }) {
+  const sp = SPECIES[name];
+  const [failed, setFailed] = useState(false);
+  if (failed || !sp) return <span className="text-3xl">{sp?.sprite ?? "❓"}</span>;
+  return (
+    <img
+      src={getSpriteUrl(name)}
+      alt={name}
+      className={`${className} object-contain pixelated`}
+      style={{ imageRendering: "pixelated" }}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function HpBar({ p }: { p: PokemonInstance }) {
   const pct = (p.currentHp / p.stats.hp) * 100;
   const color = pct > 50 ? "bg-green-500" : pct > 20 ? "bg-yellow-500" : "bg-red-500";
@@ -55,7 +70,7 @@ function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy"
   return (
     <Card className="p-4 flex-1 min-w-[280px]" style={{ borderColor: sp.color, borderWidth: 2 }}>
       <div className="flex items-center gap-3 mb-2">
-        <div className="text-5xl">{sp.sprite}</div>
+        <PokeSprite name={p.species} className="w-20 h-20" />
         <div className="flex-1">
           <div className="flex items-baseline gap-2 flex-wrap">
             <h3 className="text-lg font-bold">{sp.name}</h3>
@@ -115,7 +130,7 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
                 style={selected ? { borderColor: sp.color } : undefined}
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-3xl">{sp.sprite}</div>
+                  <PokeSprite name={name} className="w-12 h-12" />
                   {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
                 </div>
                 <div className="text-sm font-bold">{name}</div>
@@ -284,7 +299,7 @@ function Battle({ state, onAction, onReset }: {
         <div className="flex gap-2 flex-wrap">
           {state.player.team.map((p, i) => (
             <div key={i} className={`flex items-center gap-2 px-2 py-1 rounded border ${i === state.player.activeIndex ? "border-primary bg-primary/10" : "border-border"} ${p.fainted ? "opacity-40" : ""}`}>
-              <span className="text-xl">{SPECIES[p.species].sprite}</span>
+              <PokeSprite name={p.species} className="w-8 h-8" />
               <div className="text-xs">
                 <div className="font-bold">{p.species}</div>
                 <div>{p.currentHp}/{p.stats.hp}</div>
@@ -296,7 +311,7 @@ function Battle({ state, onAction, onReset }: {
         <div className="flex gap-2 flex-wrap">
           {state.enemy.team.map((p, i) => (
             <div key={i} className={`flex items-center gap-2 px-2 py-1 rounded border ${i === state.enemy.activeIndex ? "border-destructive bg-destructive/10" : "border-border"} ${p.fainted ? "opacity-40" : ""}`}>
-              <span className="text-xl">{SPECIES[p.species].sprite}</span>
+              <PokeSprite name={p.species} className="w-8 h-8" />
               <div className="text-xs">
                 <div className="font-bold">{p.species}</div>
                 <div>{p.fainted ? "Fainted" : "OK"}</div>
@@ -324,7 +339,7 @@ function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInsta
             style={{ borderColor: sp.color }}
           >
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{sp.sprite}</span>
+              <PokeSprite name={p.species} className="w-10 h-10" />
               <div>
                 <div className="font-bold text-sm">{p.species}</div>
                 <div className="text-xs">{p.currentHp}/{p.stats.hp} HP</div>
