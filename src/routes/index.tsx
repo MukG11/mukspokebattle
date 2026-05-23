@@ -34,6 +34,21 @@ function buildEnemyTeam(trainerIdx: number): PokemonInstance[] {
   return TRAINERS[trainerIdx].team.map((m) => createPokemon(m.species, m.level, m.moves));
 }
 
+function PokeSprite({ name, className = "w-12 h-12" }: { name: string; className?: string }) {
+  const sp = SPECIES[name];
+  const [failed, setFailed] = useState(false);
+  if (failed || !sp) return <span className="text-3xl">{sp?.sprite ?? "❓"}</span>;
+  return (
+    <img
+      src={getSpriteUrl(name)}
+      alt={name}
+      className={`${className} object-contain pixelated`}
+      style={{ imageRendering: "pixelated" }}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function HpBar({ p }: { p: PokemonInstance }) {
   const pct = (p.currentHp / p.stats.hp) * 100;
   const color = pct > 50 ? "bg-green-500" : pct > 20 ? "bg-yellow-500" : "bg-red-500";
