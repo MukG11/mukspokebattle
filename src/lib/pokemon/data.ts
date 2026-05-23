@@ -154,7 +154,29 @@ export const SPECIES: Record<string, Species> = {
   Noivern: { name: "Noivern", types: ["flying", "dragon"], base: { hp: 85, atk: 70, def: 80, spa: 97, spd: 80, spe: 123 }, moves: ["Hurricane", "Draco Meteor", "Dragon Pulse", "Air Slash"], sprite: "🦇🐉", color: "#6d28d9", region: "Kalos" },
   Diancie: { name: "Diancie", types: ["rock", "fairy"], base: { hp: 50, atk: 100, def: 150, spa: 100, spd: 150, spe: 50 }, moves: ["Moonblast", "Dazzling Gleam", "Earth Power", "Stone Edge"], sprite: "💎👸", color: "#f472b6", region: "Kalos", megaForm: "Diancie-Mega" },
   "Diancie-Mega": { name: "Diancie (Mega)", types: ["rock", "fairy"], base: { hp: 50, atk: 160, def: 110, spa: 160, spd: 110, spe: 110 }, moves: ["Moonblast", "Stone Edge", "Earth Power", "Play Rough"], sprite: "💎✨", color: "#ec4899" },
+
+  // === Eeveelutions (BUFFED — "the eight elemental sovereigns") ===
+  Eevee: { name: "Eevee", types: ["normal"], base: { hp: 95, atk: 95, def: 90, spa: 95, spd: 95, spe: 95 }, moves: ["Body Slam", "Quick Attack", "Shadow Ball", "Iron Tail"], sprite: "🦊", color: "#c69968", region: "Kanto" },
+  Vaporeon: { name: "Vaporeon", types: ["water"], base: { hp: 160, atk: 85, def: 90, spa: 140, spd: 125, spe: 95 }, moves: ["Hydro Pump", "Ice Beam", "Shadow Ball", "Aura Sphere"], sprite: "💧🦊", color: "#3b82f6", region: "Kanto" },
+  Jolteon: { name: "Jolteon", types: ["electric"], base: { hp: 95, atk: 85, def: 90, spa: 140, spd: 125, spe: 160 }, moves: ["Thunder", "Thunderbolt", "Shadow Ball", "Quick Attack"], sprite: "⚡🦊", color: "#eab308", region: "Kanto" },
+  Flareon: { name: "Flareon", types: ["fire"], base: { hp: 95, atk: 160, def: 90, spa: 125, spd: 140, spe: 95 }, moves: ["Flare Blitz", "Fire Blast", "Body Slam", "Quick Attack"], sprite: "🔥🦊", color: "#ef4444", region: "Kanto" },
+  Espeon: { name: "Espeon", types: ["psychic"], base: { hp: 95, atk: 85, def: 90, spa: 160, spd: 125, spe: 140 }, moves: ["Psychic", "Shadow Ball", "Dazzling Gleam", "Recover"], sprite: "🔮🦊", color: "#ec4899", region: "Johto" },
+  Umbreon: { name: "Umbreon", types: ["dark"], base: { hp: 125, atk: 85, def: 140, spa: 90, spd: 160, spe: 95 }, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"], sprite: "🌑🦊", color: "#1f2937", region: "Johto" },
+  Leafeon: { name: "Leafeon", types: ["grass"], base: { hp: 95, atk: 140, def: 160, spa: 85, spd: 90, spe: 125 }, moves: ["Leaf Blade", "X-Scissor", "Sucker Punch", "Quick Attack"], sprite: "🍃🦊", color: "#22c55e", region: "Sinnoh" },
+  Glaceon: { name: "Glaceon", types: ["ice"], base: { hp: 95, atk: 85, def: 140, spa: 160, spd: 125, spe: 90 }, moves: ["Blizzard", "Ice Beam", "Shadow Ball", "Icicle Crash"], sprite: "❄️🦊", color: "#67e8f9", region: "Sinnoh" },
 };
+
+// Showdown sprite URL helper — returns an animated GIF of the Pokémon
+export function getSpriteUrl(speciesName: string): string {
+  const sp = SPECIES[speciesName];
+  if (sp?.image) return sp.image;
+  const slug = speciesName
+    .toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, "")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-mega-([xy])$/, "-mega$1");
+  return `https://play.pokemonshowdown.com/sprites/ani/${slug}.gif`;
+}
 
 // Cleanup: the inline `in MOVES` ternaries above run at module load and resolve
 // to fallbacks if the moves aren't defined. Patch unresolved move references.
