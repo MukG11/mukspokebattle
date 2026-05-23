@@ -109,9 +109,20 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">⚔️ Pokémon Battle Engine</h1>
-        <p className="text-muted-foreground">Pick up to 6 Pokémon. Mega Evolutions are enabled — once per battle.</p>
+      <div className="text-center space-y-3">
+        <h1
+          className="text-5xl font-black tracking-tight"
+          style={{
+            background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 25%, #ef4444 50%, #c084fc 75%, #a78bfa 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            filter: "drop-shadow(0 0 8px rgba(251,191,36,0.5)) drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
+          }}
+        >
+          ⚔️ Pokémon Battle Engine
+        </h1>
+        <p className="text-sm text-white/60">Pick up to 6 Pokémon. Mega Evolutions are enabled — once per battle.</p>
       </div>
 
       <Card className="p-4">
