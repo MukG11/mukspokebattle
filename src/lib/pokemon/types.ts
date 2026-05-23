@@ -31,10 +31,11 @@ export interface Species {
   types: PokeType[];
   base: BaseStats;
   moves: string[]; // move names available
-  sprite: string; // emoji or text
+  sprite: string; // emoji fallback
   color: string; // accent color hex
   region?: "Kanto" | "Johto" | "Hoenn" | "Sinnoh" | "Unova" | "Kalos";
   megaForm?: string; // key into SPECIES for the Mega form
+  image?: string; // override sprite URL
 }
 
 export interface PokemonInstance {
