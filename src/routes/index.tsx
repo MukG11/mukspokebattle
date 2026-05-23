@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS } from "@/lib/pokemon/data";
+import { MOVES, PLAYER_TEAM_OPTIONS, SPECIES, TRAINERS, getSpriteUrl } from "@/lib/pokemon/data";
 import { createPokemon } from "@/lib/pokemon/engine";
 import { chooseAiMove, chooseAiSwitch } from "@/lib/pokemon/ai";
 import {
