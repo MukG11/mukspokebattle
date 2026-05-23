@@ -206,15 +206,33 @@ function Battle({ state, onAction, onReset }: {
       </div>
 
       {/* Battlefield */}
-      <div className="relative bg-gradient-to-b from-sky-200 to-green-200 dark:from-slate-800 dark:to-slate-900 rounded-xl p-6 min-h-[280px] overflow-hidden">
-        <div className="absolute top-4 right-4 max-w-sm w-full">
+      <div className="relative rounded-xl overflow-hidden min-h-[320px] border border-white/10">
+        {/* Sky */}
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900 via-purple-900 to-amber-950" />
+        {/* Stars / distant lights */}
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+        {/* Stadium lights glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full blur-3xl opacity-20 bg-cyan-400" />
+        {/* Ground / Arena floor */}
+        <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-gradient-to-t from-stone-800 via-stone-700 to-stone-600" />
+        {/* Arena floor lines */}
+        <div className="absolute bottom-[38%] left-[10%] right-[10%] h-px bg-amber-400/40" />
+        <div className="absolute bottom-[42%] left-[20%] right-[20%] h-px bg-amber-400/20" />
+        {/* Battle circle */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border-2 border-amber-400/30" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-amber-400/20" />
+        {/* VS Badge */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/30 border-2 border-white/20">
+            <span className="text-lg font-black text-white italic">VS</span>
+          </div>
+        </div>
+        {/* Pokémon Cards positioned on battlefield */}
+        <div className="absolute top-4 right-4 max-w-[260px] w-full z-10">
           <PokemonCard p={enemy} side="enemy" />
         </div>
-        <div className="absolute bottom-4 left-4 max-w-sm w-full">
+        <div className="absolute bottom-4 left-4 max-w-[260px] w-full z-10">
           <PokemonCard p={player} side="player" />
-        </div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl opacity-30">
-          ⚔️
         </div>
       </div>
 
