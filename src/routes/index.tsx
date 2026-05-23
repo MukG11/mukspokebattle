@@ -339,7 +339,7 @@ function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInsta
             style={{ borderColor: sp.color }}
           >
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{sp.sprite}</span>
+              <PokeSprite name={p.species} className="w-10 h-10" />
               <div>
                 <div className="font-bold text-sm">{p.species}</div>
                 <div className="text-xs">{p.currentHp}/{p.stats.hp} HP</div>
