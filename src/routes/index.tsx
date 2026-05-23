@@ -130,7 +130,7 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
                 style={selected ? { borderColor: sp.color } : undefined}
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-3xl">{sp.sprite}</div>
+                  <PokeSprite name={name} className="w-12 h-12" />
                   {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
                 </div>
                 <div className="text-sm font-bold">{name}</div>
