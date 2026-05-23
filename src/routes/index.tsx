@@ -311,7 +311,7 @@ function Battle({ state, onAction, onReset }: {
         <div className="flex gap-2 flex-wrap">
           {state.enemy.team.map((p, i) => (
             <div key={i} className={`flex items-center gap-2 px-2 py-1 rounded border ${i === state.enemy.activeIndex ? "border-destructive bg-destructive/10" : "border-border"} ${p.fainted ? "opacity-40" : ""}`}>
-              <span className="text-xl">{SPECIES[p.species].sprite}</span>
+              <PokeSprite name={p.species} className="w-8 h-8" />
               <div className="text-xs">
                 <div className="font-bold">{p.species}</div>
                 <div>{p.fainted ? "Fainted" : "OK"}</div>
