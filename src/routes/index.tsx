@@ -55,7 +55,7 @@ function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy"
   return (
     <Card className="p-4 flex-1 min-w-[280px]" style={{ borderColor: sp.color, borderWidth: 2 }}>
       <div className="flex items-center gap-3 mb-2">
-        <div className="text-5xl">{sp.sprite}</div>
+        <PokeSprite name={p.species} className="w-20 h-20" />
         <div className="flex-1">
           <div className="flex items-baseline gap-2 flex-wrap">
             <h3 className="text-lg font-bold">{sp.name}</h3>
