@@ -255,6 +255,20 @@ export const TRAINERS: Trainer[] = [
       { species: "Charizard", level: 68, moves: ["Flamethrower", "Air Slash", "Dragon Claw", "Fire Blast"] },
     ],
   },
+  {
+    name: "Eevee Master Aria",
+    title: "Sovereign of the Eight",
+    sprite: "🦊✨",
+    strategy: "smart",
+    team: [
+      { species: "Vaporeon", level: 65, moves: ["Hydro Pump", "Ice Beam", "Shadow Ball", "Aura Sphere"] },
+      { species: "Jolteon", level: 65, moves: ["Thunder", "Thunderbolt", "Shadow Ball", "Quick Attack"] },
+      { species: "Flareon", level: 65, moves: ["Flare Blitz", "Fire Blast", "Body Slam", "Quick Attack"] },
+      { species: "Espeon", level: 65, moves: ["Psychic", "Shadow Ball", "Dazzling Gleam", "Recover"] },
+      { species: "Umbreon", level: 65, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"] },
+      { species: "Sylveon", level: 68, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"] },
+    ],
+  },
 ];
 
 // Player can pick from all non-mega species
