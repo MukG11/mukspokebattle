@@ -117,7 +117,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-slate-900 to-zinc-900 text-foreground">
+        <div
+          className="min-h-screen"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(236,72,153,0.06) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(34,211,238,0.05) 0%, transparent 50%)",
+          }}
+        >
+          <Outlet />
+        </div>
+      </div>
     </QueryClientProvider>
   );
 }
