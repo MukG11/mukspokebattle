@@ -202,7 +202,7 @@ export const SPECIES: Record<string, Species> = {
   Slowking: { name: "Slowking", types: ["water", "psychic"], base: { hp: 95, atk: 75, def: 80, spa: 100, spd: 110, spe: 30 }, moves: ["Surf", "Psychic", "Ice Beam", "Slack Off"], sprite: "👑🐌", color: "#f472b6", region: "Johto" },
   Heliolisk: { name: "Heliolisk", types: ["electric", "normal"], base: { hp: 62, atk: 55, def: 52, spa: 109, spd: 94, spe: 109 }, moves: ["Thunderbolt", "Dark Pulse", "Dazzling Gleam", "Thunder"], sprite: "🦎⚡", color: "#eab308", region: "Kalos" },
   Sableye: { name: "Sableye", types: ["dark", "ghost"], base: { hp: 50, atk: 75, def: 75, spa: 65, spd: 65, spe: 50 }, moves: ["Shadow Sneak", "Sucker Punch", "Knock Off", "Recover"], sprite: "💎👁️", color: "#581c87", region: "Hoenn" },
-  Crobat: { name: "Crobat", types: ["poison", "flying"], base: { hp: 85, atk: 90, def: 80, spa: 70, spd: 80, spe: 130 }, moves: ["Air Slash", "Sludge Bomb", "U-turn", "Cross Poison" in MOVES ? "Cross Poison" : "Crunch"], sprite: "🦇", color: "#7e22ce", region: "Johto" },
+  Crobat: { name: "Crobat", types: ["poison", "flying"], base: { hp: 85, atk: 90, def: 80, spa: 70, spd: 80, spe: 130 }, moves: ["Air Slash", "Sludge Bomb", "U-turn", "Crunch"], sprite: "🦇", color: "#7e22ce", region: "Johto" },
 
   // === Legendaries ===
   Rayquaza: { name: "Rayquaza", types: ["dragon", "flying"], base: { hp: 105, atk: 150, def: 90, spa: 150, spd: 90, spe: 95 }, moves: ["Dragon Ascent", "Outrage", "Draco Meteor", "Earthquake"], sprite: "🐉☄️", color: "#10b981", region: "Hoenn", legendary: true },
