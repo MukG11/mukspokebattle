@@ -315,6 +315,20 @@ export const TRAINERS: Trainer[] = [
       { species: "Sylveon", level: 68, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"] },
     ],
   },
+  {
+    name: "Legendary Trial",
+    title: "Guardians of Myth",
+    sprite: "🌟🐉",
+    strategy: "smart",
+    team: [
+      { species: "Rayquaza", level: 70, moves: ["Dragon Ascent", "Outrage", "Draco Meteor", "Earthquake"] },
+      { species: "Kyogre", level: 70, moves: ["Origin Pulse", "Ice Beam", "Thunder", "Surf"] },
+      { species: "Groudon", level: 70, moves: ["Precipice Blades", "Fire Punch", "Stone Edge", "Earthquake"] },
+      { species: "Dialga", level: 70, moves: ["Roar of Time", "Flash Cannon", "Aura Sphere", "Earth Power"] },
+      { species: "Xerneas", level: 70, moves: ["Moonblast", "Dazzling Gleam", "Psychic", "Play Rough"] },
+      { species: "Mewtwo", level: 72, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"] },
+    ],
+  },
 ];
 
 // Player can pick from all non-mega species
