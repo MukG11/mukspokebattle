@@ -185,6 +185,31 @@ export const SPECIES: Record<string, Species> = {
   Umbreon: { name: "Umbreon", types: ["dark"], base: { hp: 125, atk: 85, def: 140, spa: 90, spd: 160, spe: 95 }, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"], sprite: "🌑🦊", color: "#1f2937", region: "Johto" },
   Leafeon: { name: "Leafeon", types: ["grass"], base: { hp: 95, atk: 140, def: 160, spa: 85, spd: 90, spe: 125 }, moves: ["Leaf Blade", "X-Scissor", "Sucker Punch", "Quick Attack"], sprite: "🍃🦊", color: "#22c55e", region: "Sinnoh" },
   Glaceon: { name: "Glaceon", types: ["ice"], base: { hp: 95, atk: 85, def: 140, spa: 160, spd: 125, spe: 90 }, moves: ["Blizzard", "Ice Beam", "Shadow Ball", "Icicle Crash"], sprite: "❄️🦊", color: "#67e8f9", region: "Sinnoh" },
+
+  // === More fan favorites ===
+  Tyranitar: { name: "Tyranitar", types: ["rock", "dark"], base: { hp: 100, atk: 134, def: 110, spa: 95, spd: 100, spe: 61 }, moves: ["Stone Edge", "Crunch", "Earthquake", "Fire Punch"], sprite: "🦖🪨", color: "#365314", region: "Johto" },
+  Scizor: { name: "Scizor", types: ["bug", "steel"], base: { hp: 70, atk: 130, def: 100, spa: 55, spd: 80, spe: 65 }, moves: ["Bullet Punch", "X-Scissor", "U-turn", "Knock Off"], sprite: "🦂⚔️", color: "#dc2626", region: "Johto" },
+  Gyarados: { name: "Gyarados", types: ["water", "flying"], base: { hp: 95, atk: 125, def: 79, spa: 60, spd: 100, spe: 81 }, moves: ["Aqua Tail", "Crunch", "Ice Punch", "Earthquake"], sprite: "🐉🌊", color: "#1d4ed8", region: "Kanto" },
+  Hydreigon: { name: "Hydreigon", types: ["dark", "dragon"], base: { hp: 92, atk: 105, def: 90, spa: 125, spd: 90, spe: 98 }, moves: ["Dark Pulse", "Draco Meteor", "Flash Cannon", "Fire Blast"], sprite: "🐲🖤", color: "#1e1b4b", region: "Unova" },
+  Volcarona: { name: "Volcarona", types: ["bug", "fire"], base: { hp: 85, atk: 60, def: 65, spa: 135, spd: 105, spe: 100 }, moves: ["Bug Buzz", "Fire Blast", "Quiver Dance", "Psychic"], sprite: "🦋🔥", color: "#f97316", region: "Unova" },
+  Conkeldurr: { name: "Conkeldurr", types: ["fighting"], base: { hp: 105, atk: 140, def: 95, spa: 55, spd: 65, spe: 45 }, moves: ["Drain Punch", "Stone Edge", "Knock Off", "Ice Punch"], sprite: "💪🏗️", color: "#a16207", region: "Unova" },
+  Mamoswine: { name: "Mamoswine", types: ["ice", "ground"], base: { hp: 110, atk: 130, def: 80, spa: 70, spd: 60, spe: 80 }, moves: ["Icicle Crash", "Earthquake", "Stone Edge", "Ice Punch"], sprite: "🦣❄️", color: "#0e7490", region: "Sinnoh" },
+  Togekiss: { name: "Togekiss", types: ["fairy", "flying"], base: { hp: 85, atk: 50, def: 95, spa: 120, spd: 115, spe: 80 }, moves: ["Dazzling Gleam", "Air Slash", "Aura Sphere", "Roost"], sprite: "🥚✨", color: "#fbcfe8", region: "Sinnoh" },
+  Bisharp: { name: "Bisharp", types: ["dark", "steel"], base: { hp: 65, atk: 125, def: 100, spa: 60, spd: 70, spe: 70 }, moves: ["Sucker Punch", "Iron Head", "Knock Off", "Stone Edge"], sprite: "⚔️🗡️", color: "#7f1d1d", region: "Unova" },
+  Excadrill: { name: "Excadrill", types: ["ground", "steel"], base: { hp: 110, atk: 135, def: 60, spa: 50, spd: 65, spe: 88 }, moves: ["Earthquake", "Iron Head", "Rock Slide", "X-Scissor"], sprite: "⛏️🦫", color: "#78350f", region: "Unova" },
+  Mimikyu: { name: "Mimikyu", types: ["ghost", "fairy"], base: { hp: 55, atk: 90, def: 80, spa: 50, spd: 105, spe: 96 }, moves: ["Play Rough", "Shadow Claw", "Shadow Sneak", "Sucker Punch"], sprite: "👻🎀", color: "#facc15", region: "Kalos" },
+  Decidueye: { name: "Decidueye", types: ["grass", "ghost"], base: { hp: 78, atk: 107, def: 75, spa: 100, spd: 100, spe: 70 }, moves: ["Leaf Blade", "Shadow Claw", "Sucker Punch", "U-turn"], sprite: "🏹🦉", color: "#16a34a", region: "Kalos" },
+  Slowking: { name: "Slowking", types: ["water", "psychic"], base: { hp: 95, atk: 75, def: 80, spa: 100, spd: 110, spe: 30 }, moves: ["Surf", "Psychic", "Ice Beam", "Slack Off"], sprite: "👑🐌", color: "#f472b6", region: "Johto" },
+  Heliolisk: { name: "Heliolisk", types: ["electric", "normal"], base: { hp: 62, atk: 55, def: 52, spa: 109, spd: 94, spe: 109 }, moves: ["Thunderbolt", "Dark Pulse", "Dazzling Gleam", "Thunder"], sprite: "🦎⚡", color: "#eab308", region: "Kalos" },
+  Sableye: { name: "Sableye", types: ["dark", "ghost"], base: { hp: 50, atk: 75, def: 75, spa: 65, spd: 65, spe: 50 }, moves: ["Shadow Sneak", "Sucker Punch", "Knock Off", "Recover"], sprite: "💎👁️", color: "#581c87", region: "Hoenn" },
+  Crobat: { name: "Crobat", types: ["poison", "flying"], base: { hp: 85, atk: 90, def: 80, spa: 70, spd: 80, spe: 130 }, moves: ["Air Slash", "Sludge Bomb", "U-turn", "Cross Poison" in MOVES ? "Cross Poison" : "Crunch"], sprite: "🦇", color: "#7e22ce", region: "Johto" },
+
+  // === Legendaries ===
+  Rayquaza: { name: "Rayquaza", types: ["dragon", "flying"], base: { hp: 105, atk: 150, def: 90, spa: 150, spd: 90, spe: 95 }, moves: ["Dragon Ascent", "Outrage", "Draco Meteor", "Earthquake"], sprite: "🐉☄️", color: "#10b981", region: "Hoenn", legendary: true },
+  Kyogre: { name: "Kyogre", types: ["water"], base: { hp: 100, atk: 100, def: 90, spa: 150, spd: 140, spe: 90 }, moves: ["Origin Pulse", "Ice Beam", "Thunder", "Surf"], sprite: "🐋🌊", color: "#1e40af", region: "Hoenn", legendary: true },
+  Groudon: { name: "Groudon", types: ["ground"], base: { hp: 100, atk: 150, def: 140, spa: 100, spd: 90, spe: 90 }, moves: ["Precipice Blades", "Fire Punch", "Stone Edge", "Earthquake"], sprite: "🦖🌋", color: "#b91c1c", region: "Hoenn", legendary: true },
+  Dialga: { name: "Dialga", types: ["steel", "dragon"], base: { hp: 100, atk: 120, def: 120, spa: 150, spd: 100, spe: 90 }, moves: ["Roar of Time", "Flash Cannon", "Aura Sphere", "Earth Power"], sprite: "⏳🐲", color: "#3b82f6", region: "Sinnoh", legendary: true },
+  Xerneas: { name: "Xerneas", types: ["fairy"], base: { hp: 126, atk: 131, def: 95, spa: 131, spd: 98, spe: 99 }, moves: ["Moonblast", "Dazzling Gleam", "Psychic", "Play Rough"], sprite: "🦌🌈", color: "#0ea5e9", region: "Kalos", legendary: true },
 };
 
 // Showdown sprite URL helper — returns an animated GIF of the Pokémon
