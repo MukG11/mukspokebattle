@@ -142,7 +142,10 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
               >
                 <div className="flex items-center justify-between">
                   <PokeSprite name={name} className="w-12 h-12" />
-                  {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
+                  <div className="flex flex-col gap-0.5 items-end">
+                    {sp.legendary && <span className="text-[8px] px-1 py-0.5 rounded bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold">LEGEND</span>}
+                    {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
+                  </div>
                 </div>
                 <div className="text-sm font-bold">{name}</div>
                 {sp.region && <div className="text-[9px] text-muted-foreground">{sp.region}</div>}

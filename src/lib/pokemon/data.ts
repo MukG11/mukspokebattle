@@ -90,6 +90,27 @@ export const MOVES: Record<string, Move> = {
   Recover: { name: "Recover", type: "normal", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
   Roost: { name: "Roost", type: "flying", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
   Growl: { name: "Growl", type: "normal", category: "status", power: 0, accuracy: 100, pp: 40 },
+  // Legendary signature moves
+  "Dragon Ascent": { name: "Dragon Ascent", type: "flying", category: "physical", power: 120, accuracy: 100, pp: 5 },
+  "Origin Pulse": { name: "Origin Pulse", type: "water", category: "special", power: 110, accuracy: 85, pp: 10 },
+  "Precipice Blades": { name: "Precipice Blades", type: "ground", category: "physical", power: 120, accuracy: 85, pp: 10 },
+  "Roar of Time": { name: "Roar of Time", type: "dragon", category: "special", power: 150, accuracy: 90, pp: 5 },
+  "Spacial Rend": { name: "Spacial Rend", type: "dragon", category: "special", power: 100, accuracy: 95, pp: 5 },
+  "Sacred Fire": { name: "Sacred Fire", type: "fire", category: "physical", power: 100, accuracy: 95, pp: 5, effect: "burn", effectChance: 50 },
+  "Aeroblast": { name: "Aeroblast", type: "flying", category: "special", power: 100, accuracy: 95, pp: 5 },
+  "Fusion Bolt": { name: "Fusion Bolt", type: "electric", category: "physical", power: 100, accuracy: 100, pp: 5 },
+  "Moongeist Beam": { name: "Moongeist Beam", type: "ghost", category: "special", power: 100, accuracy: 100, pp: 5 },
+  // Extra moves for new mons
+  "Liquidation": { name: "Liquidation", type: "water", category: "physical", power: 85, accuracy: 100, pp: 10 },
+  "U-turn": { name: "U-turn", type: "bug", category: "physical", power: 70, accuracy: 100, pp: 20 },
+  "Knock Off": { name: "Knock Off", type: "dark", category: "physical", power: 65, accuracy: 100, pp: 20 },
+  "Fire Punch": { name: "Fire Punch", type: "fire", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "burn", effectChance: 10 },
+  "Ice Punch": { name: "Ice Punch", type: "ice", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "freeze", effectChance: 10 },
+  "Thunder Punch": { name: "Thunder Punch", type: "electric", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "paralyze", effectChance: 10 },
+  "Aqua Tail": { name: "Aqua Tail", type: "water", category: "physical", power: 90, accuracy: 90, pp: 10 },
+  "Air Cutter": { name: "Air Cutter", type: "flying", category: "special", power: 60, accuracy: 95, pp: 25 },
+  "Slack Off": { name: "Slack Off", type: "normal", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
+  "Quiver Dance": { name: "Quiver Dance", type: "bug", category: "status", power: 0, accuracy: 100, pp: 20, effect: "spd+" },
 };
 
 export const SPECIES: Record<string, Species> = {
@@ -109,7 +130,7 @@ export const SPECIES: Record<string, Species> = {
   Snorlax: { name: "Snorlax", types: ["normal"], base: { hp: 160, atk: 110, def: 65, spa: 65, spd: 110, spe: 30 }, moves: ["Body Slam", "Earthquake", "Crunch", "Rock Slide"], sprite: "😴🐻", color: "#64748b", region: "Kanto" },
   Dragonite: { name: "Dragonite", types: ["dragon", "flying"], base: { hp: 91, atk: 134, def: 95, spa: 100, spd: 100, spe: 80 }, moves: ["Dragon Claw", "Thunder", "Fire Blast", "Extreme Speed"], sprite: "🐲", color: "#f97316", region: "Kanto" },
   Lapras: { name: "Lapras", types: ["water", "ice"], base: { hp: 130, atk: 85, def: 80, spa: 85, spd: 95, spe: 60 }, moves: ["Ice Beam", "Surf", "Body Slam", "Thunderbolt"], sprite: "🦕💧", color: "#0ea5e9", region: "Kanto" },
-  Mewtwo: { name: "Mewtwo", types: ["psychic"], base: { hp: 106, atk: 110, def: 90, spa: 154, spd: 90, spe: 130 }, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"], sprite: "🧬", color: "#a855f7", region: "Kanto", megaForm: "Mewtwo-Mega-X" },
+  Mewtwo: { name: "Mewtwo", types: ["psychic"], base: { hp: 106, atk: 110, def: 90, spa: 154, spd: 90, spe: 130 }, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"], sprite: "🧬", color: "#a855f7", region: "Kanto", megaForm: "Mewtwo-Mega-X", legendary: true },
   "Mewtwo-Mega-X": { name: "Mewtwo (Mega X)", types: ["psychic", "fighting"], base: { hp: 106, atk: 190, def: 100, spa: 154, spd: 100, spe: 130 }, moves: ["Psycho Cut", "Close Combat", "Drain Punch", "Zen Headbutt"], sprite: "🧬💪", color: "#9333ea" },
 
   // === Hoenn ===
@@ -164,6 +185,31 @@ export const SPECIES: Record<string, Species> = {
   Umbreon: { name: "Umbreon", types: ["dark"], base: { hp: 125, atk: 85, def: 140, spa: 90, spd: 160, spe: 95 }, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"], sprite: "🌑🦊", color: "#1f2937", region: "Johto" },
   Leafeon: { name: "Leafeon", types: ["grass"], base: { hp: 95, atk: 140, def: 160, spa: 85, spd: 90, spe: 125 }, moves: ["Leaf Blade", "X-Scissor", "Sucker Punch", "Quick Attack"], sprite: "🍃🦊", color: "#22c55e", region: "Sinnoh" },
   Glaceon: { name: "Glaceon", types: ["ice"], base: { hp: 95, atk: 85, def: 140, spa: 160, spd: 125, spe: 90 }, moves: ["Blizzard", "Ice Beam", "Shadow Ball", "Icicle Crash"], sprite: "❄️🦊", color: "#67e8f9", region: "Sinnoh" },
+
+  // === More fan favorites ===
+  Tyranitar: { name: "Tyranitar", types: ["rock", "dark"], base: { hp: 100, atk: 134, def: 110, spa: 95, spd: 100, spe: 61 }, moves: ["Stone Edge", "Crunch", "Earthquake", "Fire Punch"], sprite: "🦖🪨", color: "#365314", region: "Johto" },
+  Scizor: { name: "Scizor", types: ["bug", "steel"], base: { hp: 70, atk: 130, def: 100, spa: 55, spd: 80, spe: 65 }, moves: ["Bullet Punch", "X-Scissor", "U-turn", "Knock Off"], sprite: "🦂⚔️", color: "#dc2626", region: "Johto" },
+  Gyarados: { name: "Gyarados", types: ["water", "flying"], base: { hp: 95, atk: 125, def: 79, spa: 60, spd: 100, spe: 81 }, moves: ["Aqua Tail", "Crunch", "Ice Punch", "Earthquake"], sprite: "🐉🌊", color: "#1d4ed8", region: "Kanto" },
+  Hydreigon: { name: "Hydreigon", types: ["dark", "dragon"], base: { hp: 92, atk: 105, def: 90, spa: 125, spd: 90, spe: 98 }, moves: ["Dark Pulse", "Draco Meteor", "Flash Cannon", "Fire Blast"], sprite: "🐲🖤", color: "#1e1b4b", region: "Unova" },
+  Volcarona: { name: "Volcarona", types: ["bug", "fire"], base: { hp: 85, atk: 60, def: 65, spa: 135, spd: 105, spe: 100 }, moves: ["Bug Buzz", "Fire Blast", "Quiver Dance", "Psychic"], sprite: "🦋🔥", color: "#f97316", region: "Unova" },
+  Conkeldurr: { name: "Conkeldurr", types: ["fighting"], base: { hp: 105, atk: 140, def: 95, spa: 55, spd: 65, spe: 45 }, moves: ["Drain Punch", "Stone Edge", "Knock Off", "Ice Punch"], sprite: "💪🏗️", color: "#a16207", region: "Unova" },
+  Mamoswine: { name: "Mamoswine", types: ["ice", "ground"], base: { hp: 110, atk: 130, def: 80, spa: 70, spd: 60, spe: 80 }, moves: ["Icicle Crash", "Earthquake", "Stone Edge", "Ice Punch"], sprite: "🦣❄️", color: "#0e7490", region: "Sinnoh" },
+  Togekiss: { name: "Togekiss", types: ["fairy", "flying"], base: { hp: 85, atk: 50, def: 95, spa: 120, spd: 115, spe: 80 }, moves: ["Dazzling Gleam", "Air Slash", "Aura Sphere", "Roost"], sprite: "🥚✨", color: "#fbcfe8", region: "Sinnoh" },
+  Bisharp: { name: "Bisharp", types: ["dark", "steel"], base: { hp: 65, atk: 125, def: 100, spa: 60, spd: 70, spe: 70 }, moves: ["Sucker Punch", "Iron Head", "Knock Off", "Stone Edge"], sprite: "⚔️🗡️", color: "#7f1d1d", region: "Unova" },
+  Excadrill: { name: "Excadrill", types: ["ground", "steel"], base: { hp: 110, atk: 135, def: 60, spa: 50, spd: 65, spe: 88 }, moves: ["Earthquake", "Iron Head", "Rock Slide", "X-Scissor"], sprite: "⛏️🦫", color: "#78350f", region: "Unova" },
+  Mimikyu: { name: "Mimikyu", types: ["ghost", "fairy"], base: { hp: 55, atk: 90, def: 80, spa: 50, spd: 105, spe: 96 }, moves: ["Play Rough", "Shadow Claw", "Shadow Sneak", "Sucker Punch"], sprite: "👻🎀", color: "#facc15", region: "Kalos" },
+  Decidueye: { name: "Decidueye", types: ["grass", "ghost"], base: { hp: 78, atk: 107, def: 75, spa: 100, spd: 100, spe: 70 }, moves: ["Leaf Blade", "Shadow Claw", "Sucker Punch", "U-turn"], sprite: "🏹🦉", color: "#16a34a", region: "Kalos" },
+  Slowking: { name: "Slowking", types: ["water", "psychic"], base: { hp: 95, atk: 75, def: 80, spa: 100, spd: 110, spe: 30 }, moves: ["Surf", "Psychic", "Ice Beam", "Slack Off"], sprite: "👑🐌", color: "#f472b6", region: "Johto" },
+  Heliolisk: { name: "Heliolisk", types: ["electric", "normal"], base: { hp: 62, atk: 55, def: 52, spa: 109, spd: 94, spe: 109 }, moves: ["Thunderbolt", "Dark Pulse", "Dazzling Gleam", "Thunder"], sprite: "🦎⚡", color: "#eab308", region: "Kalos" },
+  Sableye: { name: "Sableye", types: ["dark", "ghost"], base: { hp: 50, atk: 75, def: 75, spa: 65, spd: 65, spe: 50 }, moves: ["Shadow Sneak", "Sucker Punch", "Knock Off", "Recover"], sprite: "💎👁️", color: "#581c87", region: "Hoenn" },
+  Crobat: { name: "Crobat", types: ["poison", "flying"], base: { hp: 85, atk: 90, def: 80, spa: 70, spd: 80, spe: 130 }, moves: ["Air Slash", "Sludge Bomb", "U-turn", "Crunch"], sprite: "🦇", color: "#7e22ce", region: "Johto" },
+
+  // === Legendaries ===
+  Rayquaza: { name: "Rayquaza", types: ["dragon", "flying"], base: { hp: 105, atk: 150, def: 90, spa: 150, spd: 90, spe: 95 }, moves: ["Dragon Ascent", "Outrage", "Draco Meteor", "Earthquake"], sprite: "🐉☄️", color: "#10b981", region: "Hoenn", legendary: true },
+  Kyogre: { name: "Kyogre", types: ["water"], base: { hp: 100, atk: 100, def: 90, spa: 150, spd: 140, spe: 90 }, moves: ["Origin Pulse", "Ice Beam", "Thunder", "Surf"], sprite: "🐋🌊", color: "#1e40af", region: "Hoenn", legendary: true },
+  Groudon: { name: "Groudon", types: ["ground"], base: { hp: 100, atk: 150, def: 140, spa: 100, spd: 90, spe: 90 }, moves: ["Precipice Blades", "Fire Punch", "Stone Edge", "Earthquake"], sprite: "🦖🌋", color: "#b91c1c", region: "Hoenn", legendary: true },
+  Dialga: { name: "Dialga", types: ["steel", "dragon"], base: { hp: 100, atk: 120, def: 120, spa: 150, spd: 100, spe: 90 }, moves: ["Roar of Time", "Flash Cannon", "Aura Sphere", "Earth Power"], sprite: "⏳🐲", color: "#3b82f6", region: "Sinnoh", legendary: true },
+  Xerneas: { name: "Xerneas", types: ["fairy"], base: { hp: 126, atk: 131, def: 95, spa: 131, spd: 98, spe: 99 }, moves: ["Moonblast", "Dazzling Gleam", "Psychic", "Play Rough"], sprite: "🦌🌈", color: "#0ea5e9", region: "Kalos", legendary: true },
 };
 
 // Showdown sprite URL helper — returns an animated GIF of the Pokémon
@@ -267,6 +313,20 @@ export const TRAINERS: Trainer[] = [
       { species: "Espeon", level: 65, moves: ["Psychic", "Shadow Ball", "Dazzling Gleam", "Recover"] },
       { species: "Umbreon", level: 65, moves: ["Dark Pulse", "Crunch", "Shadow Ball", "Body Slam"] },
       { species: "Sylveon", level: 68, moves: ["Moonblast", "Dazzling Gleam", "Shadow Ball", "Psychic"] },
+    ],
+  },
+  {
+    name: "Legendary Trial",
+    title: "Guardians of Myth",
+    sprite: "🌟🐉",
+    strategy: "smart",
+    team: [
+      { species: "Rayquaza", level: 70, moves: ["Dragon Ascent", "Outrage", "Draco Meteor", "Earthquake"] },
+      { species: "Kyogre", level: 70, moves: ["Origin Pulse", "Ice Beam", "Thunder", "Surf"] },
+      { species: "Groudon", level: 70, moves: ["Precipice Blades", "Fire Punch", "Stone Edge", "Earthquake"] },
+      { species: "Dialga", level: 70, moves: ["Roar of Time", "Flash Cannon", "Aura Sphere", "Earth Power"] },
+      { species: "Xerneas", level: 70, moves: ["Moonblast", "Dazzling Gleam", "Psychic", "Play Rough"] },
+      { species: "Mewtwo", level: 72, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"] },
     ],
   },
 ];

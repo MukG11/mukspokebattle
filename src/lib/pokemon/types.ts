@@ -36,6 +36,7 @@ export interface Species {
   region?: "Kanto" | "Johto" | "Hoenn" | "Sinnoh" | "Unova" | "Kalos";
   megaForm?: string; // key into SPECIES for the Mega form
   image?: string; // override sprite URL
+  legendary?: boolean;
 }
 
 export interface PokemonInstance {
