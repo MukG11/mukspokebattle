@@ -130,7 +130,7 @@ export const SPECIES: Record<string, Species> = {
   Snorlax: { name: "Snorlax", types: ["normal"], base: { hp: 160, atk: 110, def: 65, spa: 65, spd: 110, spe: 30 }, moves: ["Body Slam", "Earthquake", "Crunch", "Rock Slide"], sprite: "😴🐻", color: "#64748b", region: "Kanto" },
   Dragonite: { name: "Dragonite", types: ["dragon", "flying"], base: { hp: 91, atk: 134, def: 95, spa: 100, spd: 100, spe: 80 }, moves: ["Dragon Claw", "Thunder", "Fire Blast", "Extreme Speed"], sprite: "🐲", color: "#f97316", region: "Kanto" },
   Lapras: { name: "Lapras", types: ["water", "ice"], base: { hp: 130, atk: 85, def: 80, spa: 85, spd: 95, spe: 60 }, moves: ["Ice Beam", "Surf", "Body Slam", "Thunderbolt"], sprite: "🦕💧", color: "#0ea5e9", region: "Kanto" },
-  Mewtwo: { name: "Mewtwo", types: ["psychic"], base: { hp: 106, atk: 110, def: 90, spa: 154, spd: 90, spe: 130 }, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"], sprite: "🧬", color: "#a855f7", region: "Kanto", megaForm: "Mewtwo-Mega-X" },
+  Mewtwo: { name: "Mewtwo", types: ["psychic"], base: { hp: 106, atk: 110, def: 90, spa: 154, spd: 90, spe: 130 }, moves: ["Psychic", "Aura Sphere", "Ice Beam", "Recover"], sprite: "🧬", color: "#a855f7", region: "Kanto", megaForm: "Mewtwo-Mega-X", legendary: true },
   "Mewtwo-Mega-X": { name: "Mewtwo (Mega X)", types: ["psychic", "fighting"], base: { hp: 106, atk: 190, def: 100, spa: 154, spd: 100, spe: 130 }, moves: ["Psycho Cut", "Close Combat", "Drain Punch", "Zen Headbutt"], sprite: "🧬💪", color: "#9333ea" },
 
   // === Hoenn ===
