@@ -111,12 +111,7 @@ export const MOVES: Record<string, Move> = {
   "Air Cutter": { name: "Air Cutter", type: "flying", category: "special", power: 60, accuracy: 95, pp: 25 },
   "Slack Off": { name: "Slack Off", type: "normal", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
   "Quiver Dance": { name: "Quiver Dance", type: "bug", category: "status", power: 0, accuracy: 100, pp: 20, effect: "spd+" },
-  "Wood Hammer": MOVES_PLACEHOLDER as never,
 };
-// remove placeholder marker (Wood Hammer already defined above)
-delete (MOVES as Record<string, unknown>)["Wood Hammer"];
-// re-add the real one to keep ordering stable
-MOVES["Wood Hammer"] = { name: "Wood Hammer", type: "grass", category: "physical", power: 120, accuracy: 100, pp: 15 };
 
 export const SPECIES: Record<string, Species> = {
   // === Kanto ===
