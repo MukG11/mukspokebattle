@@ -90,7 +90,33 @@ export const MOVES: Record<string, Move> = {
   Recover: { name: "Recover", type: "normal", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
   Roost: { name: "Roost", type: "flying", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
   Growl: { name: "Growl", type: "normal", category: "status", power: 0, accuracy: 100, pp: 40 },
+  // Legendary signature moves
+  "Dragon Ascent": { name: "Dragon Ascent", type: "flying", category: "physical", power: 120, accuracy: 100, pp: 5 },
+  "Origin Pulse": { name: "Origin Pulse", type: "water", category: "special", power: 110, accuracy: 85, pp: 10 },
+  "Precipice Blades": { name: "Precipice Blades", type: "ground", category: "physical", power: 120, accuracy: 85, pp: 10 },
+  "Roar of Time": { name: "Roar of Time", type: "dragon", category: "special", power: 150, accuracy: 90, pp: 5 },
+  "Spacial Rend": { name: "Spacial Rend", type: "dragon", category: "special", power: 100, accuracy: 95, pp: 5 },
+  "Sacred Fire": { name: "Sacred Fire", type: "fire", category: "physical", power: 100, accuracy: 95, pp: 5, effect: "burn", effectChance: 50 },
+  "Aeroblast": { name: "Aeroblast", type: "flying", category: "special", power: 100, accuracy: 95, pp: 5 },
+  "Fusion Bolt": { name: "Fusion Bolt", type: "electric", category: "physical", power: 100, accuracy: 100, pp: 5 },
+  "Moongeist Beam": { name: "Moongeist Beam", type: "ghost", category: "special", power: 100, accuracy: 100, pp: 5 },
+  // Extra moves for new mons
+  "Liquidation": { name: "Liquidation", type: "water", category: "physical", power: 85, accuracy: 100, pp: 10 },
+  "U-turn": { name: "U-turn", type: "bug", category: "physical", power: 70, accuracy: 100, pp: 20 },
+  "Knock Off": { name: "Knock Off", type: "dark", category: "physical", power: 65, accuracy: 100, pp: 20 },
+  "Fire Punch": { name: "Fire Punch", type: "fire", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "burn", effectChance: 10 },
+  "Ice Punch": { name: "Ice Punch", type: "ice", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "freeze", effectChance: 10 },
+  "Thunder Punch": { name: "Thunder Punch", type: "electric", category: "physical", power: 75, accuracy: 100, pp: 15, effect: "paralyze", effectChance: 10 },
+  "Aqua Tail": { name: "Aqua Tail", type: "water", category: "physical", power: 90, accuracy: 90, pp: 10 },
+  "Air Cutter": { name: "Air Cutter", type: "flying", category: "special", power: 60, accuracy: 95, pp: 25 },
+  "Slack Off": { name: "Slack Off", type: "normal", category: "status", power: 0, accuracy: 100, pp: 10, effect: "heal" },
+  "Quiver Dance": { name: "Quiver Dance", type: "bug", category: "status", power: 0, accuracy: 100, pp: 20, effect: "spd+" },
+  "Wood Hammer": MOVES_PLACEHOLDER as never,
 };
+// remove placeholder marker (Wood Hammer already defined above)
+delete (MOVES as Record<string, unknown>)["Wood Hammer"];
+// re-add the real one to keep ordering stable
+MOVES["Wood Hammer"] = { name: "Wood Hammer", type: "grass", category: "physical", power: 120, accuracy: 100, pp: 15 };
 
 export const SPECIES: Record<string, Species> = {
   // === Kanto ===
