@@ -432,12 +432,21 @@ function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInsta
   );
 }
 
+interface XpReportEntry {
+  name: string;
+  levelBefore: number;
+  levelAfter: number;
+  xpGained: number;
+}
+
 function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
   const [trainerIdx, setTrainerIdx] = useState(0);
+  const [xpReport, setXpReport] = useState<XpReportEntry[]>([]);
 
   const startBattle = (picks: string[], tIdx: number) => {
     setTrainerIdx(tIdx);
+    setXpReport([]);
     const enemyTeam = buildEnemyTeam(tIdx);
     const playerTeam = buildPlayerTeam(picks);
     setState({
@@ -446,6 +455,30 @@ function BattlePage() {
       log: [`A wild challenger appears! ${TRAINERS[tIdx].name} sent out ${enemyTeam[0].species}!`],
       winner: null,
     });
+  };
+
+  const awardXp = (battleState: BattleState) => {
+    if (battleState.winner !== "player") return;
+    const enemySumLevels = battleState.enemy.team.reduce((s, p) => s + p.level, 0);
+    // Survivors get the full share; fainted pokemon get a smaller share.
+    const report: XpReportEntry[] = [];
+    for (const p of battleState.player.team) {
+      const share = p.fainted ? 0.4 : 1.0;
+      const gained = Math.max(1, Math.round((enemySumLevels * 4) * share));
+      const result = addXp(p.baseSpecies, gained);
+      report.push({
+        name: p.baseSpecies,
+        levelBefore: result.before.level,
+        levelAfter: result.after.level,
+        xpGained: gained,
+      });
+      if (result.levelsGained > 0) {
+        battleState.log.push(
+          `✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`,
+        );
+      }
+    }
+    setXpReport(report);
   };
 
   const handleAction = (action: TurnAction) => {
@@ -484,11 +517,15 @@ function BattlePage() {
       }
     }
 
+    if (next.winner === "player") awardXp(next);
     setState(next);
   };
 
-  const reset = () => setState(null);
+  const reset = () => {
+    setState(null);
+    setXpReport([]);
+  };
 
   if (!state) return <TeamPicker onStart={startBattle} />;
-  return <Battle state={state} onAction={handleAction} onReset={reset} />;
+  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} />;
 }
