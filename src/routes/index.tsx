@@ -320,6 +320,22 @@ function Battle({ state, onAction, onReset, xpReport }: {
           <div className="text-3xl font-bold">
             {state.winner === "player" ? "🏆 Victory!" : "💀 Defeat"}
           </div>
+          {state.winner === "player" && xpReport.length > 0 && (
+            <div className="text-left max-w-md mx-auto space-y-1 bg-muted/30 rounded p-3">
+              <div className="text-xs font-bold uppercase text-amber-400 mb-1">Experience Gained</div>
+              {xpReport.map((r) => {
+                const leveled = r.levelAfter > r.levelBefore;
+                return (
+                  <div key={r.name} className="flex justify-between text-sm font-mono">
+                    <span>{r.name}</span>
+                    <span className={leveled ? "text-emerald-400 font-bold" : "text-white/70"}>
+                      +{r.xpGained} XP{leveled ? ` · Lv.${r.levelBefore} → Lv.${r.levelAfter}` : ""}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <Button onClick={onReset}>Battle Again</Button>
         </Card>
       ) : mustSwitch ? (
