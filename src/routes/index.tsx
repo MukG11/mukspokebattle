@@ -440,12 +440,6 @@ function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInsta
   );
 }
 
-interface XpReportEntry {
-  name: string;
-  levelBefore: number;
-  levelAfter: number;
-  xpGained: number;
-}
 
 function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
