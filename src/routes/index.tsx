@@ -242,10 +242,11 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
   );
 }
 
-function Battle({ state, onAction, onReset }: {
+function Battle({ state, onAction, onReset, xpReport }: {
   state: BattleState;
   onAction: (a: TurnAction) => void;
   onReset: () => void;
+  xpReport: XpReportEntry[];
 }) {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
