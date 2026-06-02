@@ -12,8 +12,23 @@ import type { PokemonInstance } from "@/lib/pokemon/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  MAX_LEVEL,
+  addLevels,
+  addXp,
+  getProgress,
+  resetProgress,
+  xpToNext,
+} from "@/lib/pokemon/progression";
 
 export const Route = createFileRoute("/")({ component: BattlePage });
+
+interface XpReportEntry {
+  name: string;
+  levelBefore: number;
+  levelAfter: number;
+  xpGained: number;
+}
 
 const TYPE_COLORS: Record<string, string> = {
   normal: "bg-gray-400", fire: "bg-red-500", water: "bg-blue-500", grass: "bg-green-500",
@@ -26,7 +41,8 @@ const TYPE_COLORS: Record<string, string> = {
 function buildPlayerTeam(picks: string[]): PokemonInstance[] {
   return picks.map((name) => {
     const sp = SPECIES[name];
-    return createPokemon(name, 50, sp.moves);
+    const { level } = getProgress(name);
+    return createPokemon(name, level, sp.moves);
   });
 }
 
@@ -100,11 +116,26 @@ function PokemonCard({ p, side }: { p: PokemonInstance; side: "player" | "enemy"
 function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
   const [trainerIdx, setTrainerIdx] = useState(0);
+  const [progressTick, setProgressTick] = useState(0);
+  const bump = () => setProgressTick((n) => n + 1);
 
   const toggle = (name: string) => {
     setPicks((prev) =>
       prev.includes(name) ? prev.filter((p) => p !== name) : prev.length < 6 ? [...prev, name] : prev,
     );
+  };
+
+  const trainOne = (e: React.MouseEvent, name: string) => {
+    e.stopPropagation();
+    addLevels(name, 1);
+    bump();
+  };
+
+  const resetAll = () => {
+    if (typeof window !== "undefined" && window.confirm("Reset all Pokémon levels back to 50?")) {
+      resetProgress();
+      bump();
+    }
   };
 
   return (
@@ -122,15 +153,23 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
         >
           ⚔️ Pokémon Battle Engine
         </h1>
-        <p className="text-sm text-white/60">Pick up to 6 Pokémon. Mega Evolutions are enabled — once per battle.</p>
+        <p className="text-sm text-white/60">
+          Pick up to 6 Pokémon. Mega Evolutions enabled. Pokémon gain XP and level up after battles — train them up to Lv. {MAX_LEVEL}.
+        </p>
       </div>
 
       <Card className="p-4">
-        <h2 className="font-bold mb-3">Your Team ({picks.length}/6)</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 max-h-[420px] overflow-y-auto pr-2">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold">Your Team ({picks.length}/6)</h2>
+          <Button variant="ghost" size="sm" onClick={resetAll} className="text-xs">Reset Levels</Button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[480px] overflow-y-auto pr-2">
           {PLAYER_TEAM_OPTIONS.map((name) => {
             const sp = SPECIES[name];
             const selected = picks.includes(name);
+            const prog = getProgress(name);
+            void progressTick; // re-read after train
+            const xpPct = prog.level >= MAX_LEVEL ? 100 : Math.min(100, (prog.xp / xpToNext(prog.level)) * 100);
             return (
               <button
                 key={name}
@@ -147,12 +186,28 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
                     {sp.megaForm && <span className="text-[8px] px-1 py-0.5 rounded bg-fuchsia-600 text-white font-bold">MEGA</span>}
                   </div>
                 </div>
-                <div className="text-sm font-bold">{name}</div>
-                {sp.region && <div className="text-[9px] text-muted-foreground">{sp.region}</div>}
-                <div className="flex gap-1 mt-1 flex-wrap">
-                  {sp.types.map((t) => (
-                    <span key={t} className={`text-[9px] px-1.5 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>{t}</span>
-                  ))}
+                <div className="text-sm font-bold leading-tight">{name}</div>
+                <div className="flex items-center justify-between mt-0.5">
+                  {sp.region && <div className="text-[9px] text-muted-foreground">{sp.region}</div>}
+                  <div className="text-[10px] font-mono font-bold text-amber-400">Lv. {prog.level}</div>
+                </div>
+                <div className="h-1 rounded bg-muted/40 overflow-hidden mt-1">
+                  <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500" style={{ width: `${xpPct}%` }} />
+                </div>
+                <div className="flex gap-1 mt-1 flex-wrap items-center justify-between">
+                  <div className="flex gap-1 flex-wrap">
+                    {sp.types.map((t) => (
+                      <span key={t} className={`text-[9px] px-1.5 py-0.5 rounded uppercase text-white font-bold ${TYPE_COLORS[t]}`}>{t}</span>
+                    ))}
+                  </div>
+                  <span
+                    role="button"
+                    onClick={(e) => trainOne(e, name)}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/80 hover:bg-emerald-500 text-white font-bold cursor-pointer"
+                    title="Train +1 level"
+                  >
+                    +Lv
+                  </span>
                 </div>
               </button>
             );
@@ -194,10 +249,11 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
   );
 }
 
-function Battle({ state, onAction, onReset }: {
+function Battle({ state, onAction, onReset, xpReport }: {
   state: BattleState;
   onAction: (a: TurnAction) => void;
   onReset: () => void;
+  xpReport: XpReportEntry[];
 }) {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
@@ -264,6 +320,22 @@ function Battle({ state, onAction, onReset }: {
           <div className="text-3xl font-bold">
             {state.winner === "player" ? "🏆 Victory!" : "💀 Defeat"}
           </div>
+          {state.winner === "player" && xpReport.length > 0 && (
+            <div className="text-left max-w-md mx-auto space-y-1 bg-muted/30 rounded p-3">
+              <div className="text-xs font-bold uppercase text-amber-400 mb-1">Experience Gained</div>
+              {xpReport.map((r) => {
+                const leveled = r.levelAfter > r.levelBefore;
+                return (
+                  <div key={r.name} className="flex justify-between text-sm font-mono">
+                    <span>{r.name}</span>
+                    <span className={leveled ? "text-emerald-400 font-bold" : "text-white/70"}>
+                      +{r.xpGained} XP{leveled ? ` · Lv.${r.levelBefore} → Lv.${r.levelAfter}` : ""}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <Button onClick={onReset}>Battle Again</Button>
         </Card>
       ) : mustSwitch ? (
@@ -384,12 +456,15 @@ function SwitchPanel({ team, activeIndex, onPick, forced }: { team: PokemonInsta
   );
 }
 
+
 function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
   const [trainerIdx, setTrainerIdx] = useState(0);
+  const [xpReport, setXpReport] = useState<XpReportEntry[]>([]);
 
   const startBattle = (picks: string[], tIdx: number) => {
     setTrainerIdx(tIdx);
+    setXpReport([]);
     const enemyTeam = buildEnemyTeam(tIdx);
     const playerTeam = buildPlayerTeam(picks);
     setState({
@@ -398,6 +473,30 @@ function BattlePage() {
       log: [`A wild challenger appears! ${TRAINERS[tIdx].name} sent out ${enemyTeam[0].species}!`],
       winner: null,
     });
+  };
+
+  const awardXp = (battleState: BattleState) => {
+    if (battleState.winner !== "player") return;
+    const enemySumLevels = battleState.enemy.team.reduce((s, p) => s + p.level, 0);
+    // Survivors get the full share; fainted pokemon get a smaller share.
+    const report: XpReportEntry[] = [];
+    for (const p of battleState.player.team) {
+      const share = p.fainted ? 0.4 : 1.0;
+      const gained = Math.max(1, Math.round((enemySumLevels * 4) * share));
+      const result = addXp(p.baseSpecies, gained);
+      report.push({
+        name: p.baseSpecies,
+        levelBefore: result.before.level,
+        levelAfter: result.after.level,
+        xpGained: gained,
+      });
+      if (result.levelsGained > 0) {
+        battleState.log.push(
+          `✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`,
+        );
+      }
+    }
+    setXpReport(report);
   };
 
   const handleAction = (action: TurnAction) => {
@@ -436,11 +535,15 @@ function BattlePage() {
       }
     }
 
+    if (next.winner === "player") awardXp(next);
     setState(next);
   };
 
-  const reset = () => setState(null);
+  const reset = () => {
+    setState(null);
+    setXpReport([]);
+  };
 
   if (!state) return <TeamPicker onStart={startBattle} />;
-  return <Battle state={state} onAction={handleAction} onReset={reset} />;
+  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} />;
 }
