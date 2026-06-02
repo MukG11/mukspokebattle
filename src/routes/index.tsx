@@ -12,6 +12,14 @@ import type { PokemonInstance } from "@/lib/pokemon/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  MAX_LEVEL,
+  addLevels,
+  addXp,
+  getProgress,
+  resetProgress,
+  xpToNext,
+} from "@/lib/pokemon/progression";
 
 export const Route = createFileRoute("/")({ component: BattlePage });
 
@@ -26,7 +34,8 @@ const TYPE_COLORS: Record<string, string> = {
 function buildPlayerTeam(picks: string[]): PokemonInstance[] {
   return picks.map((name) => {
     const sp = SPECIES[name];
-    return createPokemon(name, 50, sp.moves);
+    const { level } = getProgress(name);
+    return createPokemon(name, level, sp.moves);
   });
 }
 
