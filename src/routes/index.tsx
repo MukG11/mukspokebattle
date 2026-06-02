@@ -23,6 +23,13 @@ import {
 
 export const Route = createFileRoute("/")({ component: BattlePage });
 
+interface XpReportEntry {
+  name: string;
+  levelBefore: number;
+  levelAfter: number;
+  xpGained: number;
+}
+
 const TYPE_COLORS: Record<string, string> = {
   normal: "bg-gray-400", fire: "bg-red-500", water: "bg-blue-500", grass: "bg-green-500",
   electric: "bg-yellow-400 text-black", ice: "bg-cyan-300 text-black", fighting: "bg-orange-700",
