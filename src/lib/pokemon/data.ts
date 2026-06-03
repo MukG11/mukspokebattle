@@ -263,7 +263,7 @@ export const SPECIES: Record<string, Species> = {
   Entei: { name: "Entei", types: ["fire"], base: { hp: 115, atk: 115, def: 85, spa: 90, spd: 75, spe: 100 }, moves: ["Sacred Fire", "Stone Edge", "Extreme Speed", "Crunch"], sprite: "🔥🦁", color: "#b91c1c", region: "Johto", legendary: true },
   Suicune: { name: "Suicune", types: ["water"], base: { hp: 100, atk: 75, def: 115, spa: 90, spd: 115, spe: 85 }, moves: ["Surf", "Ice Beam", "Aura Sphere", "Shadow Ball"], sprite: "🌊🐺", color: "#0ea5e9", region: "Johto", legendary: true },
   Lugia: { name: "Lugia", types: ["psychic", "flying"], base: { hp: 106, atk: 90, def: 130, spa: 90, spd: 154, spe: 110 }, moves: ["Aeroblast", "Psychic", "Ice Beam", "Recover"], sprite: "🦅✨", color: "#bfdbfe", region: "Johto", legendary: true },
-  "Ho-Oh": { name: "Ho-Oh", types: ["fire", "flying"], base: { hp: 106, atk: 130, def: 90, spa: 110, spd: 154, spe: 90 }, moves: ["Sacred Fire", "Brave Bird", "Earthquake", "Recover"], sprite: "🌈🦅", color: "#f59e0b", region: "Johto", legendary: true },
+  "Ho-Oh": { name: "Ho-Oh", types: ["fire", "flying"], base: { hp: 106, atk: 130, def: 90, spa: 110, spd: 154, spe: 90 }, moves: ["Sacred Fire", "Brave Bird", "Earthquake", "Recover"], sprite: "🌈🦅", color: "#f59e0b", region: "Johto", legendary: true, image: "https://play.pokemonshowdown.com/sprites/ani/ho-oh.gif" },
 
   Manectric: { name: "Manectric", types: ["electric"], base: { hp: 70, atk: 75, def: 60, spa: 105, spd: 60, spe: 105 }, moves: ["Thunderbolt", "Flamethrower", "Thunder", "Dazzling Gleam"], sprite: "⚡🐕", color: "#facc15", region: "Hoenn" },
   Mightyena: { name: "Mightyena", types: ["dark"], base: { hp: 70, atk: 90, def: 70, spa: 60, spd: 60, spe: 70 }, moves: ["Crunch", "Sucker Punch", "Play Rough", "Body Slam"], sprite: "🐺🌑", color: "#374151", region: "Hoenn" },
@@ -522,5 +522,123 @@ export const TRAINERS: Trainer[] = [
   },
 ];
 
+// ============= Randomized opponents =============
+// Helper: pick N random unique species (optionally filtered) and build a team
+// with up to 4 of that species' moves. Seeded by a string for stability per session.
+function _seededRng(seed: string) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return () => {
+    h += 0x6d2b79f5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildRandomTeam(opts: {
+  seed: string;
+  size: number;
+  level: number;
+  pool: string[];
+  bossSpecies?: string;
+  bossLevel?: number;
+}): { species: string; level: number; moves: string[] }[] {
+  const rng = _seededRng(opts.seed);
+  const pool = [...opts.pool];
+  // Fisher-Yates with seeded rng
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const picks = pool.slice(0, opts.size);
+  const team = picks.map((species) => {
+    const sp = SPECIES[species];
+    const moves = sp.moves.slice(0, 4);
+    return { species, level: opts.level, moves };
+  });
+  if (opts.bossSpecies && SPECIES[opts.bossSpecies]) {
+    team[team.length - 1] = {
+      species: opts.bossSpecies,
+      level: opts.bossLevel ?? opts.level + 3,
+      moves: SPECIES[opts.bossSpecies].moves.slice(0, 4),
+    };
+  }
+  return team;
+}
+
+const _allSpecies = Object.keys(SPECIES).filter((k) => !SPECIES[k].name.includes("Mega"));
+const _nonLegendary = _allSpecies.filter((k) => !SPECIES[k].legendary);
+const _legendary = _allSpecies.filter((k) => SPECIES[k].legendary);
+const _byType = (t: string) => _nonLegendary.filter((k) => SPECIES[k].types.includes(t as PokeType));
+
+TRAINERS.push(
+  {
+    name: "Ace Trainer Rin",
+    title: "Wildcard Duelist",
+    sprite: "🎲⚡",
+    strategy: "random",
+    team: buildRandomTeam({ seed: "rin", size: 6, level: 50, pool: _nonLegendary }),
+  },
+  {
+    name: "Hex Maniac Mira",
+    title: "Ghosts & Shadows",
+    sprite: "👻🔮",
+    strategy: "aggressive",
+    team: buildRandomTeam({
+      seed: "mira",
+      size: 6,
+      level: 55,
+      pool: [..._byType("ghost"), ..._byType("dark"), ..._byType("psychic")],
+    }),
+  },
+  {
+    name: "Pyromancer Ignis",
+    title: "Inferno Brigade",
+    sprite: "🔥🦂",
+    strategy: "aggressive",
+    team: buildRandomTeam({
+      seed: "ignis",
+      size: 6,
+      level: 58,
+      pool: [..._byType("fire"), ..._byType("ground"), ..._byType("rock")],
+      bossSpecies: "Ho-Oh",
+      bossLevel: 65,
+    }),
+  },
+  {
+    name: "Tidecaller Marin",
+    title: "Storm of the Deep",
+    sprite: "🌊🐉",
+    strategy: "smart",
+    team: buildRandomTeam({
+      seed: "marin",
+      size: 6,
+      level: 60,
+      pool: [..._byType("water"), ..._byType("ice"), ..._byType("electric")],
+    }),
+  },
+  {
+    name: "Champion Random",
+    title: "Chaos Incarnate",
+    sprite: "🎰👑",
+    // Reseed every page load so this opponent is truly different each session.
+    strategy: "smart",
+    team: buildRandomTeam({
+      seed: `chaos-${Math.floor(Date.now() / 1000)}`,
+      size: 6,
+      level: 65,
+      pool: _allSpecies,
+      bossSpecies: _legendary[Math.floor(Math.random() * _legendary.length)],
+      bossLevel: 72,
+    }),
+  },
+);
+
 // Player can pick from all non-mega species
 export const PLAYER_TEAM_OPTIONS = Object.keys(SPECIES).filter((k) => !SPECIES[k].name.includes("Mega"));
+
