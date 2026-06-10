@@ -249,11 +249,20 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
   );
 }
 
-function Battle({ state, onAction, onReset, xpReport }: {
+interface MoveAnim {
+  id: number;
+  attacker: "player" | "enemy";
+  moveName: string;
+  type: string;
+}
+
+function Battle({ state, onAction, onReset, xpReport, anim, busy }: {
   state: BattleState;
   onAction: (a: TurnAction) => void;
   onReset: () => void;
   xpReport: XpReportEntry[];
+  anim: MoveAnim | null;
+  busy: boolean;
 }) {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
@@ -267,6 +276,10 @@ function Battle({ state, onAction, onReset, xpReport }: {
 
   const mustSwitch = player.fainted && !state.winner;
   const canMega = !state.player.megaUsed && !player.isMega && !!SPECIES[player.baseSpecies]?.megaForm;
+
+  const playerAttacking = anim?.attacker === "player";
+  const enemyAttacking = anim?.attacker === "enemy";
+  const projectileColor = anim ? (TYPE_COLORS[anim.type] ?? "bg-white") : "";
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-4">
@@ -297,11 +310,44 @@ function Battle({ state, onAction, onReset, xpReport }: {
             <span className="text-lg font-black text-white italic">VS</span>
           </div>
         </div>
+
+        {/* Move projectile flying across the field */}
+        {anim && (
+          <div
+            key={`proj-${anim.id}`}
+            className={`absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 rounded-full ${projectileColor} blur-md shadow-2xl z-20 pointer-events-none ${
+              anim.attacker === "player" ? "anim-projectile-enemy" : "anim-projectile-player"
+            }`}
+          />
+        )}
+
+        {/* Move name banner */}
+        {anim && (
+          <div
+            key={`banner-${anim.id}`}
+            className="absolute top-3 left-1/2 z-30 anim-banner pointer-events-none"
+          >
+            <div className={`px-4 py-1.5 rounded-full ${projectileColor} text-white font-black text-sm tracking-wider shadow-lg border border-white/30 whitespace-nowrap`}>
+              {anim.moveName.toUpperCase()}
+            </div>
+          </div>
+        )}
+
         {/* Pokémon Cards positioned on battlefield */}
-        <div className="absolute top-4 right-4 max-w-[260px] w-full z-10">
+        <div
+          key={`enemy-${state.enemy.activeIndex}-${anim?.id ?? "idle"}`}
+          className={`absolute top-4 right-4 max-w-[260px] w-full z-10 ${
+            enemyAttacking ? "anim-attack-enemy" : playerAttacking ? "anim-hit" : ""
+          }`}
+        >
           <PokemonCard p={enemy} side="enemy" />
         </div>
-        <div className="absolute bottom-4 left-4 max-w-[260px] w-full z-10">
+        <div
+          key={`player-${state.player.activeIndex}-${anim?.id ?? "idle"}`}
+          className={`absolute bottom-4 left-4 max-w-[260px] w-full z-10 ${
+            playerAttacking ? "anim-attack-player" : enemyAttacking ? "anim-hit" : ""
+          }`}
+        >
           <PokemonCard p={player} side="player" />
         </div>
       </div>
