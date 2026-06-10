@@ -407,7 +407,7 @@ function Battle({ state, onAction, onReset, xpReport, anim, busy }: {
                 return (
                   <button
                     key={m.name}
-                    disabled={m.pp <= 0}
+                    disabled={m.pp <= 0 || busy}
                     onClick={() => { onAction({ kind: "move", moveName: m.name, mega: megaArmed && canMega }); setMegaArmed(false); }}
                     className={`p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed ${TYPE_COLORS[mv.type]} text-white`}
                   >
