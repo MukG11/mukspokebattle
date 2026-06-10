@@ -507,6 +507,11 @@ function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
   const [trainerIdx, setTrainerIdx] = useState(0);
   const [xpReport, setXpReport] = useState<XpReportEntry[]>([]);
+  const [anim, setAnim] = useState<MoveAnim | null>(null);
+  const [busy, setBusy] = useState(false);
+  const animSeq = useRef(0);
+
+  const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
   const startBattle = (picks: string[], tIdx: number) => {
     setTrainerIdx(tIdx);
@@ -524,7 +529,6 @@ function BattlePage() {
   const awardXp = (battleState: BattleState) => {
     if (battleState.winner !== "player") return;
     const enemySumLevels = battleState.enemy.team.reduce((s, p) => s + p.level, 0);
-    // Survivors get the full share; fainted pokemon get a smaller share.
     const report: XpReportEntry[] = [];
     for (const p of battleState.player.team) {
       const share = p.fainted ? 0.4 : 1.0;
@@ -537,16 +541,14 @@ function BattlePage() {
         xpGained: gained,
       });
       if (result.levelsGained > 0) {
-        battleState.log.push(
-          `✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`,
-        );
+        battleState.log.push(`✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`);
       }
     }
     setXpReport(report);
   };
 
-  const handleAction = (action: TurnAction) => {
-    if (!state) return;
+  const handleAction = async (action: TurnAction) => {
+    if (!state || busy) return;
     const next: BattleState = JSON.parse(JSON.stringify(state));
     const enemyActive = next.enemy.team[next.enemy.activeIndex];
     const playerActive = next.player.team[next.player.activeIndex];
@@ -561,7 +563,6 @@ function BattlePage() {
       enemyAction = { kind: "move", moveName, mega: aiCanMega };
     }
 
-    // If player is forced-switching, only do switch (no enemy move)
     if (action.kind === "switch" && playerActive.fainted) {
       next.player.activeIndex = action.switchIndex!;
       next.log.push(`Go! ${next.player.team[next.player.activeIndex].species}!`);
@@ -569,9 +570,9 @@ function BattlePage() {
       return;
     }
 
+    const oldLogLen = next.log.length;
     runTurn(next, action, enemyAction);
 
-    // If enemy fainted, queue an AI switch on next tick
     const en = next.enemy.team[next.enemy.activeIndex];
     if (en.fainted && !next.winner) {
       const idx = chooseAiSwitch(next.enemy.team, next.player.team[next.player.activeIndex]);
@@ -582,14 +583,49 @@ function BattlePage() {
     }
 
     if (next.winner === "player") awardXp(next);
+
+    // Identify "used <Move>!" lines and figure out which side attacked.
+    const newLines = next.log.slice(oldLogLen);
+    const playerNames = new Set([playerActive.species, playerActive.baseSpecies]);
+    const enemyNames = new Set([enemyActive.species, enemyActive.baseSpecies]);
+    const anims: MoveAnim[] = [];
+    for (const line of newLines) {
+      const m = line.match(/^(.+?) used (.+)!$/);
+      if (!m) continue;
+      const [, who, moveName] = m;
+      const mv = MOVES[moveName];
+      if (!mv) continue;
+      const side: "player" | "enemy" = playerNames.has(who)
+        ? "player"
+        : enemyNames.has(who)
+          ? "enemy"
+          : "player";
+      anims.push({ id: ++animSeq.current, attacker: side, moveName, type: mv.type });
+    }
+
+    if (anims.length === 0) {
+      setState(next);
+      return;
+    }
+
+    setBusy(true);
+    for (const a of anims) {
+      setAnim(a);
+      await sleep(750);
+    }
+    setAnim(null);
     setState(next);
+    setBusy(false);
   };
 
   const reset = () => {
     setState(null);
     setXpReport([]);
+    setAnim(null);
+    setBusy(false);
   };
 
   if (!state) return <TeamPicker onStart={startBattle} />;
-  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} />;
+  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} anim={anim} busy={busy} />;
 }
+
