@@ -142,3 +142,44 @@
     color: var(--color-foreground);
   }
 }
+
+/* Battle move animations */
+@keyframes attack-lunge-player {
+  0% { transform: translate(0,0); }
+  40% { transform: translate(40px, -30px) scale(1.05); }
+  60% { transform: translate(40px, -30px) scale(1.05); }
+  100% { transform: translate(0,0); }
+}
+@keyframes attack-lunge-enemy {
+  0% { transform: translate(0,0); }
+  40% { transform: translate(-40px, 30px) scale(1.05); }
+  60% { transform: translate(-40px, 30px) scale(1.05); }
+  100% { transform: translate(0,0); }
+}
+@keyframes hit-shake {
+  0%, 100% { transform: translate(0,0); filter: brightness(1); }
+  10%, 30%, 50%, 70% { transform: translate(-6px, 2px); filter: brightness(2) saturate(2); }
+  20%, 40%, 60%, 80% { transform: translate(6px, -2px); filter: brightness(2) saturate(2); }
+}
+@keyframes projectile-to-enemy {
+  0% { transform: translate(-40%, 40%) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(40%, -40%) scale(1.4); opacity: 0; }
+}
+@keyframes projectile-to-player {
+  0% { transform: translate(40%, -40%) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(-40%, 40%) scale(1.4); opacity: 0; }
+}
+@keyframes move-banner {
+  0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); }
+  20%, 80% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, 10px) scale(0.95); }
+}
+.anim-attack-player { animation: attack-lunge-player 700ms ease-in-out; }
+.anim-attack-enemy { animation: attack-lunge-enemy 700ms ease-in-out; }
+.anim-hit { animation: hit-shake 500ms ease-in-out 200ms; }
+.anim-banner { animation: move-banner 700ms ease-in-out; }
+.anim-projectile-enemy { animation: projectile-to-enemy 600ms ease-out 100ms forwards; }
+.anim-projectile-player { animation: projectile-to-player 600ms ease-out 100ms forwards; }
+
