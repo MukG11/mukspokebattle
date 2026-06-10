@@ -249,11 +249,20 @@ function TeamPicker({ onStart }: { onStart: (picks: string[], trainerIdx: number
   );
 }
 
-function Battle({ state, onAction, onReset, xpReport }: {
+interface MoveAnim {
+  id: number;
+  attacker: "player" | "enemy";
+  moveName: string;
+  type: string;
+}
+
+function Battle({ state, onAction, onReset, xpReport, anim, busy }: {
   state: BattleState;
   onAction: (a: TurnAction) => void;
   onReset: () => void;
   xpReport: XpReportEntry[];
+  anim: MoveAnim | null;
+  busy: boolean;
 }) {
   const player = state.player.team[state.player.activeIndex];
   const enemy = state.enemy.team[state.enemy.activeIndex];
@@ -267,6 +276,10 @@ function Battle({ state, onAction, onReset, xpReport }: {
 
   const mustSwitch = player.fainted && !state.winner;
   const canMega = !state.player.megaUsed && !player.isMega && !!SPECIES[player.baseSpecies]?.megaForm;
+
+  const playerAttacking = anim?.attacker === "player";
+  const enemyAttacking = anim?.attacker === "enemy";
+  const projectileColor = anim ? (TYPE_COLORS[anim.type] ?? "bg-white") : "";
 
   return (
     <div className="max-w-5xl mx-auto p-4 space-y-4">
@@ -297,11 +310,44 @@ function Battle({ state, onAction, onReset, xpReport }: {
             <span className="text-lg font-black text-white italic">VS</span>
           </div>
         </div>
+
+        {/* Move projectile flying across the field */}
+        {anim && (
+          <div
+            key={`proj-${anim.id}`}
+            className={`absolute top-1/2 left-1/2 w-10 h-10 -ml-5 -mt-5 rounded-full ${projectileColor} blur-md shadow-2xl z-20 pointer-events-none ${
+              anim.attacker === "player" ? "anim-projectile-enemy" : "anim-projectile-player"
+            }`}
+          />
+        )}
+
+        {/* Move name banner */}
+        {anim && (
+          <div
+            key={`banner-${anim.id}`}
+            className="absolute top-3 left-1/2 z-30 anim-banner pointer-events-none"
+          >
+            <div className={`px-4 py-1.5 rounded-full ${projectileColor} text-white font-black text-sm tracking-wider shadow-lg border border-white/30 whitespace-nowrap`}>
+              {anim.moveName.toUpperCase()}
+            </div>
+          </div>
+        )}
+
         {/* Pokémon Cards positioned on battlefield */}
-        <div className="absolute top-4 right-4 max-w-[260px] w-full z-10">
+        <div
+          key={`enemy-${state.enemy.activeIndex}-${anim?.id ?? "idle"}`}
+          className={`absolute top-4 right-4 max-w-[260px] w-full z-10 ${
+            enemyAttacking ? "anim-attack-enemy" : playerAttacking ? "anim-hit" : ""
+          }`}
+        >
           <PokemonCard p={enemy} side="enemy" />
         </div>
-        <div className="absolute bottom-4 left-4 max-w-[260px] w-full z-10">
+        <div
+          key={`player-${state.player.activeIndex}-${anim?.id ?? "idle"}`}
+          className={`absolute bottom-4 left-4 max-w-[260px] w-full z-10 ${
+            playerAttacking ? "anim-attack-player" : enemyAttacking ? "anim-hit" : ""
+          }`}
+        >
           <PokemonCard p={player} side="player" />
         </div>
       </div>
@@ -361,7 +407,7 @@ function Battle({ state, onAction, onReset, xpReport }: {
                 return (
                   <button
                     key={m.name}
-                    disabled={m.pp <= 0}
+                    disabled={m.pp <= 0 || busy}
                     onClick={() => { onAction({ kind: "move", moveName: m.name, mega: megaArmed && canMega }); setMegaArmed(false); }}
                     className={`p-3 rounded-lg border-2 text-left hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed ${TYPE_COLORS[mv.type]} text-white`}
                   >
@@ -461,6 +507,11 @@ function BattlePage() {
   const [state, setState] = useState<BattleState | null>(null);
   const [trainerIdx, setTrainerIdx] = useState(0);
   const [xpReport, setXpReport] = useState<XpReportEntry[]>([]);
+  const [anim, setAnim] = useState<MoveAnim | null>(null);
+  const [busy, setBusy] = useState(false);
+  const animSeq = useRef(0);
+
+  const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
   const startBattle = (picks: string[], tIdx: number) => {
     setTrainerIdx(tIdx);
@@ -478,7 +529,6 @@ function BattlePage() {
   const awardXp = (battleState: BattleState) => {
     if (battleState.winner !== "player") return;
     const enemySumLevels = battleState.enemy.team.reduce((s, p) => s + p.level, 0);
-    // Survivors get the full share; fainted pokemon get a smaller share.
     const report: XpReportEntry[] = [];
     for (const p of battleState.player.team) {
       const share = p.fainted ? 0.4 : 1.0;
@@ -491,16 +541,14 @@ function BattlePage() {
         xpGained: gained,
       });
       if (result.levelsGained > 0) {
-        battleState.log.push(
-          `✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`,
-        );
+        battleState.log.push(`✨ ${p.baseSpecies} grew to Lv. ${result.after.level}!`);
       }
     }
     setXpReport(report);
   };
 
-  const handleAction = (action: TurnAction) => {
-    if (!state) return;
+  const handleAction = async (action: TurnAction) => {
+    if (!state || busy) return;
     const next: BattleState = JSON.parse(JSON.stringify(state));
     const enemyActive = next.enemy.team[next.enemy.activeIndex];
     const playerActive = next.player.team[next.player.activeIndex];
@@ -515,7 +563,6 @@ function BattlePage() {
       enemyAction = { kind: "move", moveName, mega: aiCanMega };
     }
 
-    // If player is forced-switching, only do switch (no enemy move)
     if (action.kind === "switch" && playerActive.fainted) {
       next.player.activeIndex = action.switchIndex!;
       next.log.push(`Go! ${next.player.team[next.player.activeIndex].species}!`);
@@ -523,9 +570,9 @@ function BattlePage() {
       return;
     }
 
+    const oldLogLen = next.log.length;
     runTurn(next, action, enemyAction);
 
-    // If enemy fainted, queue an AI switch on next tick
     const en = next.enemy.team[next.enemy.activeIndex];
     if (en.fainted && !next.winner) {
       const idx = chooseAiSwitch(next.enemy.team, next.player.team[next.player.activeIndex]);
@@ -536,14 +583,49 @@ function BattlePage() {
     }
 
     if (next.winner === "player") awardXp(next);
+
+    // Identify "used <Move>!" lines and figure out which side attacked.
+    const newLines = next.log.slice(oldLogLen);
+    const playerNames = new Set([playerActive.species, playerActive.baseSpecies]);
+    const enemyNames = new Set([enemyActive.species, enemyActive.baseSpecies]);
+    const anims: MoveAnim[] = [];
+    for (const line of newLines) {
+      const m = line.match(/^(.+?) used (.+)!$/);
+      if (!m) continue;
+      const [, who, moveName] = m;
+      const mv = MOVES[moveName];
+      if (!mv) continue;
+      const side: "player" | "enemy" = playerNames.has(who)
+        ? "player"
+        : enemyNames.has(who)
+          ? "enemy"
+          : "player";
+      anims.push({ id: ++animSeq.current, attacker: side, moveName, type: mv.type });
+    }
+
+    if (anims.length === 0) {
+      setState(next);
+      return;
+    }
+
+    setBusy(true);
+    for (const a of anims) {
+      setAnim(a);
+      await sleep(750);
+    }
+    setAnim(null);
     setState(next);
+    setBusy(false);
   };
 
   const reset = () => {
     setState(null);
     setXpReport([]);
+    setAnim(null);
+    setBusy(false);
   };
 
   if (!state) return <TeamPicker onStart={startBattle} />;
-  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} />;
+  return <Battle state={state} onAction={handleAction} onReset={reset} xpReport={xpReport} anim={anim} busy={busy} />;
 }
+
